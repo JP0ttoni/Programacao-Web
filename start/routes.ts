@@ -7,6 +7,7 @@
 |
 */
 
+import ProductsController from '#controllers/products_controller'
 import UserscontrollersController from '#controllers/userscontrollers_controller'
 import router from '@adonisjs/core/services/router'
 
@@ -17,14 +18,24 @@ router.group(()=>{
     router.post('/', [UserscontrollersController, 'create']).as('create')
 }).prefix('users')
 
-router.get('/ok', () => {
-    return "tudo certo>"
-})
+router.group(()=>{
 
-router.get('/kay', () => {
-    return "kay kay = meu momo"
-})
+    router.get('/ok', () => {
+        return "tudo certo>"
+    })
+    router.get('/kay', () => {
+        return "kay kay = meu momo"
+    })
+    router.get('/guga', () => {
+        return "guga gay"
+    })
+}).prefix('others')
 
-router.get('/guga', () => {
-    return "guga gay"
-})
+router.group(()=>{
+    router.get('/', [ProductsController, 'index']).as('list_products')
+    router.get('/:id', [ProductsController, 'show']).as('product_match')
+    router.post('/', [ProductsController, 'store']).as(' product_store')
+    router.delete('/:id', [ProductsController, 'destroy']).as('product_delete')
+}).prefix('products')
+
+router.get('/yt/:theme', [ProductsController, 'yt'])
