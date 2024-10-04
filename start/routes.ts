@@ -36,6 +36,8 @@ router.group(()=>{
     router.get('/:id', [ProductsController, 'show']).as('product_match')
     router.post('/', [ProductsController, 'store']).as(' product_store')
     router.delete('/:id', [ProductsController, 'destroy']).as('product_delete')
+    router.patch('/:id', [ProductsController, 'patch']).as('product_patch')
 }).prefix('products')
 
 router.get('/yt/:theme', [ProductsController, 'yt'])
+router.get('/health', [ProductsController, 'health'])
