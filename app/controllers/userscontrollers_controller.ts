@@ -13,7 +13,7 @@ const users = [
   {
     id: 2,
     name: 'Kay_Kay_baloon',
-    email: 'momo@daminhaVida',
+    email: '',
   },
 ]
 
@@ -47,7 +47,6 @@ export default class UserscontrollersController {
     create({ request, response }:HttpContext)
     {
         const user = request.only(['name', 'email'])
-
         sequence += 1
 
         users.push({

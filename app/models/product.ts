@@ -6,6 +6,12 @@ export default class Product extends BaseModel {
   declare id: number
 
   @column()
+  declare price: number
+
+  @column()
+  declare description: string
+
+  @column()
   declare name:string
 
   @column.dateTime({ autoCreate: true })

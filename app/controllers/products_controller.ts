@@ -11,13 +11,27 @@ export default class ProductsController {
         const products = await data.json() 
         return products*/
 
-        const products = await Product.all()
-
+        const paginate = request.input('page', 1)//se n receber page, seta o default como 1
+        const limit = 10
         const payload = request.only(['name'])
+        const query = Product.query()
+        console.log(payload)
+        if(payload.name && payload.name.length > 0)
+        {
+            query.where('name', 'like', `%${payload.name}`)
+        }
 
+        const products = await query.paginate(paginate, limit)
 
-        return products
+        return Product.all()//Product.all()
 
+    }
+
+    async test({request}:HttpContext)
+    {
+        const data = request.only(['name'])
+        console.log( data)
+        return data 
     }
 
     async show({ params }: HttpContext) {
@@ -29,7 +43,7 @@ export default class ProductsController {
     }
 
     async store({ request }: HttpContext) {
-        const payload = request.only(['name'])
+        const payload = request.only(['name', 'price', 'description'])
         //product é o minha entidade para consultar o banco de dados, que eu criei, na hora de criar o model
         const product = await Product.create(payload)
         return product
@@ -43,28 +57,31 @@ export default class ProductsController {
         return { sucess: `${params.id} removido` }
     }
 
-    async yt({ params }: HttpContext) {
+    async yt({ view, request }: HttpContext) {
         //const apikey = 'AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4'
-        const url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=5&q=${params.theme}&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
+        const url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=7&q=${request.only(['video'])}&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
         const data = await url.json()
-        const videoIds = data.items.map(item => item.id.videoId);
+        const videoIds = data.items.map(item => item.id.videoId)//.filter(videoID => videoID !== undefined && videoID !== null);
         const base_url_video = 'https://www.youtube.com/watch?v='
         let videos = []
+
+        console.log(request.only(['video']));
 
         for (const video_id of videoIds) {
             videos.push(`${base_url_video}${video_id}\n`)
         }
 
-        const url_search = `https://www.youtube.com/results?search_query=${params.theme}`
+        const url_search = `https://www.youtube.com/results?search_query=${request.only(['video'])}`
 
         const response = `os cinco primeiros resultados da sua busca no yt: \n${videos}\n pagina de pesquisa do youtube com a pesquisa:\n${url_search}`
-        return response
+
+        return view.render("pages/yt", {videoID: videoIds})
     }
 
     async patch({ params, request }: HttpContext) {
         const product = await Product.findOrFail(params.id)
 
-        const payload = await request.only(['name'])
+        const payload = await request.only(['name', 'price', 'description'])
 
         product.merge(payload)//troca pelo campo
 
@@ -87,6 +104,18 @@ export default class ProductsController {
        })
        const datajson = await data.json()
        console.log(datajson)
+       return datajson
+    }
+
+    async mlivre({ request }:HttpContext){
+        const search = request.only(['product'])
+        const data = await fetch(`https://api.mercadolibre.com/sites/MLB/search?q=${search.product}`) 
+        const datajson = await data.json()
+        const ids = datajson.results.map(id => id.id)
+        const data_item = await fetch(`https://api.mercadolibre.com/items/${ids[1]}`)
+        const data_description = await fetch(`https://api.mercadolibre.com/items/${ids[1]}/description`)
+        const tojson = await data_description.json()
+       
        return datajson
     }
 }

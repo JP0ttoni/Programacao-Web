@@ -9,6 +9,7 @@
 
 import ProductsController from '#controllers/products_controller'
 import UserscontrollersController from '#controllers/userscontrollers_controller'
+import Product from '#models/product'
 import router from '@adonisjs/core/services/router'
 
 //router.on('/').render('pages/home')
@@ -39,5 +40,17 @@ router.group(()=>{
     router.patch('/:id', [ProductsController, 'patch']).as('product_patch')
 }).prefix('products')
 
-router.get('/yt/:theme', [ProductsController, 'yt'])
+router.get('/yt', [ProductsController, 'yt'])
 router.get('/health', [ProductsController, 'health'])
+router.get('/mlivre', [ProductsController, 'mlivre'])
+router.post('/test', [ProductsController, 'test'])
+
+router.get('/', async ({view}) => {
+    const products = await Product.all()
+    return view.render('pages/index', {products})
+})
+
+router.post('/login', ({request}) => {
+    console.log(request.all())
+    return 'fiz login'
+})
