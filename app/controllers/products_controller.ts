@@ -58,20 +58,22 @@ export default class ProductsController {
     }
 
     async yt({ view, request }: HttpContext) {
+        const query = request.only(['video']).video
         //const apikey = 'AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4'
-        const url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=7&q=${request.only(['video'])}&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
+        const url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${query}&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
         const data = await url.json()
-        const videoIds = data.items.map(item => item.id.videoId)//.filter(videoID => videoID !== undefined && videoID !== null);
+        let videoIds = data.items.map(item => item.id.videoId).filter(videoID => videoID !== undefined && videoID !== null);
+        videoIds = videoIds.slice(0,5)
         const base_url_video = 'https://www.youtube.com/watch?v='
         let videos = []
 
-        console.log(request.only(['video']));
+        console.log(query);
 
         for (const video_id of videoIds) {
             videos.push(`${base_url_video}${video_id}\n`)
         }
 
-        const url_search = `https://www.youtube.com/results?search_query=${request.only(['video'])}`
+        const url_search = `https://www.youtube.com/results?search_query=${query}`
 
         const response = `os cinco primeiros resultados da sua busca no yt: \n${videos}\n pagina de pesquisa do youtube com a pesquisa:\n${url_search}`
 
