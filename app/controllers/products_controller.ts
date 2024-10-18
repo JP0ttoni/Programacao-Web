@@ -1,51 +1,90 @@
+import Aval from '#models/aval'
 import Product from '#models/product'
+import auth from '@adonisjs/auth/services/main'
 import type { HttpContext } from '@adonisjs/core/http'
 import { debug } from 'console'
 import { request } from 'http'
 
 export default class ProductsController {
     //pegando info de API
-    async index({ request }: HttpContext) {
-        /*const data = await fetch('https://fakestoreapi.com/products') 
-        //necessidade de transformar pra json
-        const products = await data.json() 
-        return products*/
+    async index({ view, auth }: HttpContext) {
 
+        await auth.authenticate()
+
+        const products = ['creatina', 'pre treino', 'termogenico']
+
+        //await auth.use('web').logout()
+
+        return view.render('pages/products/index', {products})
+
+    }
+
+    async type_product({ request, view, auth }: HttpContext)
+    {
+        await auth.authenticate()
         const paginate = request.input('page', 1)//se n receber page, seta o default como 1
         const limit = 10
-        const payload = request.only(['name'])
+        const payload = request.only(['type'])
+
         const query = Product.query()
-        console.log(payload)
-        if(payload.name && payload.name.length > 0)
+        if(payload.type && payload.type.length > 0)
         {
-            query.where('name', 'like', `%${payload.name}`)
+            query.where('type', 'like', `%${payload.type}`)
         }
 
         const products = await query.paginate(paginate, limit)
 
-        return Product.all()//Product.all()
-
+        return view.render('pages/products/type', { products: products.rows })//products.rows: Essa propriedade contém apenas os dados reais da consulta, sem os metadados de paginação.
     }
 
-    async test({request}:HttpContext)
-    {
-        const data = request.only(['name'])
-        console.log( data)
-        return data 
-    }
+    async show({ params, view, auth }: HttpContext) {
 
-    async show({ params }: HttpContext) {
-        /*const data = await fetch(`https://fakestoreapi.com/products/${params.id}`)//tem q usar crase
-        const products = await data.json()
-        //retornar apenas uma variavel do json return products.image*/
+        await auth.authenticate()
+        console.log('entrou')
+        const avals = await Aval.query().where('product_id', params.id)
+        const nums = []
+        for(const aval of avals){
+            nums.push(aval.rate)
+        }
         const product = await Product.findOrFail(params.id)
-        return product
+        let sum = 0
+        for(const num of nums)
+        {
+            sum += num
+        }
+
+        sum = sum/nums.length
+        sum = Math.round(sum)
+        console.log(sum)
+        product.merge({rate: sum})
+        await product.save()
+        return view.render('pages/products/show', { product, avals: avals })
+    }
+
+    async aval({ params, view, request, auth }: HttpContext)
+    {
+        await auth.authenticate()
+        const user_id = request.only(['user_id'])
+        //const user_name = Aval.query().where('id', 'like', `${user_id}`)
+        return view.render('pages/products/aval', {product_id: params.id, user_name: 'joão'})
+    }
+
+    async aval_post({params, request, view, auth }: HttpContext)
+    {
+        await auth.authenticate()
+        let payload = request.only(['person_name', 'rate', 'comment', 'photo', 'product_id'])
+        payload.rate = parseInt(request.input('rate'))
+        payload.product_id = parseInt(params.id)
+        await Aval.create(payload)
+        console.log(request.all())
+
+        return view.render('pages/products/aval_posted')
     }
 
     async store({ request }: HttpContext) {
-        const payload = request.only(['name', 'price', 'description'])
+        const payload = request.only(['name', 'price', 'description', 'type'])
         //product é o minha entidade para consultar o banco de dados, que eu criei, na hora de criar o model
-        const product = await Product.create(payload)
+        const product = await Product.create(payload)//carga util
         return product
     }
 
@@ -55,6 +94,18 @@ export default class ProductsController {
         await product.delete()
 
         return { sucess: `${params.id} removido` }
+    }
+    
+    async patch({ params, request }: HttpContext) {
+        const product = await Product.findOrFail(params.id)
+
+        const payload = await request.only(['name', 'price', 'description'])
+
+        product.merge(payload)//troca pelo campo
+
+        await product.save()//salvar a modificação no banco de dados
+
+        return product
     }
 
     async yt({ view, request }: HttpContext) {
@@ -87,17 +138,6 @@ export default class ProductsController {
         return view.render("pages/others/yt", {videoID: ids})
     }
 
-    async patch({ params, request }: HttpContext) {
-        const product = await Product.findOrFail(params.id)
-
-        const payload = await request.only(['name', 'price', 'description'])
-
-        product.merge(payload)//troca pelo campo
-
-        await product.save()//salvar a modificação no banco de dados
-
-        return product
-    }
 
     async health() {
        const data =  await fetch('https://trackapi.nutritionix.com/v2/natural/nutrients/?x-app-id=ab65000d&x-app-key=0259b07fca1aa7b20d33f594feed5855',{

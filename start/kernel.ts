@@ -17,6 +17,12 @@ import server from '@adonisjs/core/services/server'
  */
 server.errorHandler(() => import('#exceptions/handler'))
 
+const globalMiddleware = [
+  'Adonis/Middleware/SessionMiddleware', // Middleware de sessão
+  'App/Middleware/ShareVariablesMiddleware', // Seu middleware
+  // Outros middlewares...
+]
+
 /**
  * The server middleware stack runs middleware on all the HTTP
  * requests, even if there is no route registered for
@@ -26,6 +32,7 @@ server.use([
   () => import('#middleware/container_bindings_middleware'),
   () => import('@adonisjs/static/static_middleware'),
   () => import('@adonisjs/vite/vite_middleware'),
+  () => import('#middleware/share_variables_middleware')
 ])
 
 /**
@@ -45,5 +52,6 @@ router.use([
  */
 export const middleware = router.named({
   guest: () => import('#middleware/guest_middleware'),
-  auth: () => import('#middleware/auth_middleware')
+  auth: () => import('#middleware/auth_middleware'),
+  user_name: () => import('#middleware/share_variables_middleware')
 })

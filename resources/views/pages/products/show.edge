@@ -1,0 +1,44 @@
+@!component('components/layouts/app.edge')
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Site</title>  
+  </head>
+  <body>    
+    <nav>
+      <a>Produtos</a>
+    </nav>
+    <main>
+      <div>
+        Lista de Produtos
+      </div>
+      <div>
+        nome: {{ product.name }}
+      </div>
+      <div>
+        nota: {{ product.rate }}
+      </div>
+      <div>
+        descrição: {{ product.description }}
+      </div>
+      <div>
+        preço: {{ product.price }}
+      </div>
+      <form action="{{ route('product_aval', { id: product.id }) }}" method="POST">
+        <button> postar uma avaliação </button>
+      </form>
+      <div>
+        Avaliações
+        <div>
+          @each(aval in avals)
+            <div>
+              nome:{{ aval.person_name }}&nbsp;
+              nota:{{ aval.rate }}&nbsp;
+              comentário: {{ aval.comment }}&nbsp;
+            </div>
+          @endeach
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

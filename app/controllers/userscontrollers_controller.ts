@@ -1,4 +1,5 @@
 // import type { HttpContext } from '@adonisjs/core/http'
+import User from '#models/user';
 import type { HttpContext } from '@adonisjs/core/http'
 import { messages } from '@vinejs/vine/defaults';
 
@@ -44,15 +45,22 @@ export default class UserscontrollersController {
         return{message: 'not found'}
     }
 
-    create({ request, response }:HttpContext)
+    async store({ request, view, auth }:HttpContext)
     {
-        const user = request.only(['name', 'email'])
-        sequence += 1
+        console.log(request.all())
+        const user = request.only(['fullName', 'password', 'username', 'email'])
+        const data_user = await User.create(user)
+        await auth.use('web').login(data_user)
+        await auth.authenticate()
 
-        users.push({
-            id: sequence,
-            ...user,
-          })
-        return response.redirect().toRoute('match_id', { id: sequence })
+        if(auth.isAuthenticated)
+        {
+          console.log('autenticado')
+        } else{
+          console.log
+        }
+    
+        // Renderizar a view de home
+        return view.render('pages/home')
     }
 }

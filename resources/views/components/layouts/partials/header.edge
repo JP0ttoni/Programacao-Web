@@ -1,7 +1,17 @@
 <nav>
     <div>
-      <a>Produtos</a>
-      <a>Criar Produto</a>
+      <a href="/">home</a>
+      <a href="{{ route('list_products') }}">Produtos</a>
+      {{ auth.user?.username }}
+      @if( !auth.isAuthenticated )
+        <a href="/users/create_user"> criar usuario </a>
+        @else
+        @if(auth.user.username  == 'admin')
+          <a>Criar Produto</a>
+        @endif
+
+      @endif
+
     </div>
     <div>
       <p>usuario</p>

@@ -1,0 +1,25 @@
+@!component('components/layouts/app.edge')
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Site</title>  
+  </head>
+  <body>    
+    <nav>
+      <a>Produtos</a>
+    </nav>
+    <main>
+      <div>
+        Lista de Produtos
+      </div>
+      <div>
+        @each(product in products)
+        <!--div>Produto A</div-->
+          <li>
+           <a href="{{ route('product_match', { id: product.id }) }}"> {{product.name}}</a>
+          </li>
+        @end
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Site</title>  
+  </head>
+  <body>    
+    <nav>
+      <a>Dê a sua avaliação</a>
+    </nav>
+    <main>
+        <form id = 'form' action="{{ route('create_user') }}" method="POST">
+            <div>
+                Nome Completo:<input type="text" name="fullName" placeholder="seu nome completo">
+            </div>
+            <div>
+                Senha:<input type="password" name="password" placeholder="sua senha completo">
+            </div>
+            <div>
+                Nome de usuário:<input type="text" name="username" placeholder="seu nome de usuário">
+            </div>
+            <div>
+                Email:<input type="text" name="email" placeholder="seu nome email">
+            </div>
+            <div>
+                <button type="submit">enviar</button>
+            </div>
+        </form>
+
+        <script>
+            document.getElementById('form').addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                }
+            })
+
+        </script>
+    </main>
+  </body>
+</html>
