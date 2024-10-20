@@ -2,6 +2,7 @@
 import User from '#models/user';
 import type { HttpContext } from '@adonisjs/core/http'
 import { messages } from '@vinejs/vine/defaults';
+import  hash from '@adonisjs/core/services/hash'
 
 let sequence = 2
 
@@ -67,13 +68,15 @@ export default class UserscontrollersController {
     async login({ request, view, auth }: HttpContext)
     {
       const { email, password } = request.only(['email', 'password'])
-      const user = await User.query()
-      .where('email', email)
-      .first()// retorna null se não encontrar usuario
+      const user = await User.query().where('email', email).first()// retorna null se não encontrar usuario
+      console.log(user)
+      
       if (user) {
-        if(user.password == password)
+        console.log(password)
+        if(await hash.verify(user.password, password))
         {
           await auth.use('web').login(user)
+          auth.authenticate()
           return view.render('pages/home')
         }
       }

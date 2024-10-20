@@ -62,7 +62,7 @@ router.get('/', async ({ view, auth, response }) => {
     const user = await User.findBy('username', 'admin')
     if(!user)
         {
-            const admin = {username: 'admin', password: 'ottoni', fullName: 'joão Pedro ottoni', email: 'jpottoni'}
+            const admin = {username: 'admin', password: 'ottoni', fullName: 'joão Pedro ottoni', email: 'admin@gmail.com'}
             await User.create(admin)
         }
 

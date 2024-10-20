@@ -8,7 +8,7 @@
       <a>Dê a sua avaliação</a>
     </nav>
     <main>
-        <form id = 'form' action="/users/login" method="POST">
+        <form id = 'form' action="{{ route('user_login') }}" method="POST">
             <div>
                 ussuario:<input type="email" name="email" placeholder="seu nome completo">
             </div>
