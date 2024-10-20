@@ -9,7 +9,9 @@ export default class ProductsController {
     //pegando info de API
     async index({ view, auth }: HttpContext) {
 
-        await auth.authenticate()
+        if(await auth.check()){
+            await auth.authenticate()
+        }
 
         const products = ['creatina', 'pre treino', 'termogenico']
 
@@ -21,7 +23,9 @@ export default class ProductsController {
 
     async type_product({ request, view, auth }: HttpContext)
     {
-        await auth.authenticate()
+        if(await auth.check()){
+            await auth.authenticate()
+        }
         const paginate = request.input('page', 1)//se n receber page, seta o default como 1
         const limit = 10
         const payload = request.only(['type'])
@@ -39,7 +43,9 @@ export default class ProductsController {
 
     async show({ params, view, auth }: HttpContext) {
 
-        await auth.authenticate()
+        if(await auth.check()){
+            await auth.authenticate()
+        }
         console.log('entrou')
         const avals = await Aval.query().where('product_id', params.id)
         const nums = []
@@ -61,17 +67,29 @@ export default class ProductsController {
         return view.render('pages/products/show', { product, avals: avals })
     }
 
-    async aval({ params, view, request, auth }: HttpContext)
+    async aval({ params, view, request, auth, response }: HttpContext)
     {
-        await auth.authenticate()
+        try {
+            await auth.authenticate()
+        } catch (error) {
+            // Se a autenticação falhar, redirecione para a página de login ou outra página
+            console.log('entrou, não')
+            return response.redirect('users/create_user'); // Substitua '/login' pela sua rota de login
+        }
+
+        if(await auth.check()){
+            await auth.authenticate()
+        }
         const user_id = request.only(['user_id'])
         //const user_name = Aval.query().where('id', 'like', `${user_id}`)
-        return view.render('pages/products/aval', {product_id: params.id, user_name: 'joão'})
+        return view.render('pages/products/aval', {product_id: params.id, user_name: auth.user?.fullName})
     }
 
     async aval_post({params, request, view, auth }: HttpContext)
     {
-        await auth.authenticate()
+        if(await auth.check()){
+            await auth.authenticate()
+        }
         let payload = request.only(['person_name', 'rate', 'comment', 'photo', 'product_id'])
         payload.rate = parseInt(request.input('rate'))
         payload.product_id = parseInt(params.id)
@@ -95,7 +113,7 @@ export default class ProductsController {
 
         return { sucess: `${params.id} removido` }
     }
-    
+
     async patch({ params, request }: HttpContext) {
         const product = await Product.findOrFail(params.id)
 

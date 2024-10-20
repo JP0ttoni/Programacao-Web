@@ -63,4 +63,20 @@ export default class UserscontrollersController {
         // Renderizar a view de home
         return view.render('pages/home')
     }
+
+    async login({ request, view, auth }: HttpContext)
+    {
+      const { email, password } = request.only(['email', 'password'])
+      const user = await User.query()
+      .where('email', email)
+      .first()// retorna null se não encontrar usuario
+      if (user) {
+        if(user.password == password)
+        {
+          await auth.use('web').login(user)
+          return view.render('pages/home')
+        }
+      }
+      return view.render('pages/users/login')
+    }
 }

@@ -8,9 +8,9 @@
       <a>Dê a sua avaliação</a>
     </nav>
     <main>
-        <form id = 'form' action="/" method="POST">
+        <form id = 'form' action="/users/login" method="POST">
             <div>
-                ussuario:<input type="text" name="login" placeholder="seu nome completo">
+                ussuario:<input type="email" name="email" placeholder="seu nome completo">
             </div>
             <div>
                 Senha:<input type="password" name="password" placeholder="sua senha completo">
@@ -26,7 +26,6 @@
                     event.preventDefault();
                 }
             })
-
         </script>
     </main>
   </body>

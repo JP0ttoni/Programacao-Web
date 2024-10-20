@@ -13,6 +13,7 @@ import Product from '#models/product'
 import User from '#models/user'
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
+import auth from '@adonisjs/auth/services/main'
 
 
 //router.on('/').render('pages/home')
@@ -22,6 +23,7 @@ router.group(()=>{
     
         return view.render('pages/users/create_user')
     })
+    router.post('/login', [UserscontrollersController, 'login']).as('user_login')
     router.get('/:id', [UserscontrollersController, 'show']).as('match_id')
     router.post('/', [UserscontrollersController, 'store']).as('create_user')
 }).prefix('users')
@@ -63,13 +65,16 @@ router.get('/', async ({ view, auth, response }) => {
             const admin = {username: 'admin', password: 'ottoni', fullName: 'joão Pedro ottoni', email: 'jpottoni'}
             await User.create(admin)
         }
+
+        console.log( `resultado: ${(await auth.check())}`)
+        //auth.isAuthenticated
         
         try {
             await auth.authenticate()
         } catch (error) {
             // Se a autenticação falhar, redirecione para a página de login ou outra página
             console.log('entrou, não')
-            return response.redirect('users/create_user'); // Substitua '/login' pela sua rota de login
+            //return response.redirect('users/create_user'); // Substitua '/login' pela sua rota de login
         }
     
     const products = await Product.all()
@@ -79,6 +84,11 @@ router.get('/', async ({ view, auth, response }) => {
 router.get('/login', ({ view, request, auth }) => {
     console.log(request.all())
     return view.render('pages/users/login')
+})
+
+router.get('/logout', async ({ view, request, auth }) => {
+    await auth.use('web').logout()
+    return view.render('pages/home')
 })
 
 /*class HomeController {
