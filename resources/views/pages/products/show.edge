@@ -24,9 +24,11 @@
       <div>
         preço: {{ product.price }}
       </div>
+      @if(await auth.check())
       <form action="{{ route('product_aval', { id: product.id }) }}" method="POST">
         <button> postar uma avaliação </button>
       </form>
+      @endif
       <div>
         Avaliações
         <div>

@@ -67,6 +67,7 @@ export default class UserscontrollersController {
 
     async login({ request, view, auth }: HttpContext)
     {
+      let check = true
       const { email, password } = request.only(['email', 'password'])
       const user = await User.query().where('email', email).first()// retorna null se não encontrar usuario
       console.log(user)
@@ -80,6 +81,6 @@ export default class UserscontrollersController {
           return view.render('pages/home')
         }
       }
-      return view.render('pages/users/login')
+      return view.render('pages/users/login', { check: false })
     }
 }

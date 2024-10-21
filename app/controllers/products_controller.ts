@@ -4,6 +4,7 @@ import auth from '@adonisjs/auth/services/main'
 import type { HttpContext } from '@adonisjs/core/http'
 import { debug } from 'console'
 import { request } from 'http'
+import { title } from 'process'
 
 export default class ProductsController {
     //pegando info de API
@@ -26,9 +27,35 @@ export default class ProductsController {
         if(await auth.check()){
             await auth.authenticate()
         }
+
+        const payload = request.only(['type'])
+        console.log(payload)
+        const url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${payload.type}&type=video&videoDuration=medium&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
+        const data = await url.json()
+        const videoIds = data.items.map(item => item.id.videoId).filter(videoID => videoID !== undefined && videoID !== null);
+        let ids = []
+        const channelID = data.items
+        
+        for(const canal of channelID)//fazendo a verificação se o canais retornados tem mais de 500mil inscritos e retornando os videos em q o canal tenha mais de 500mil inscritos
+        {
+            //console.log(canal)//UCthbIFAxbXTTQEC7EcQvP1Q   ${canal.snippet.channelId}
+            let channel = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${canal.snippet.channelId}&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
+            let jsonchannel = await channel.json()
+            let verify = jsonchannel.items.map(item => item.statistics.subscriberCount)
+            verify = parseInt(verify, 10)
+            //console.log(verify)
+            if(verify >= 500000)
+            {
+                ids.push(canal.id.videoId)
+            }
+        }
+
+        ids = ids.slice(0,5)
+
+        console.log(ids)
+
         const paginate = request.input('page', 1)//se n receber page, seta o default como 1
         const limit = 10
-        const payload = request.only(['type'])
 
         const query = Product.query()
         if(payload.type && payload.type.length > 0)
@@ -38,7 +65,7 @@ export default class ProductsController {
 
         const products = await query.paginate(paginate, limit)
 
-        return view.render('pages/products/type', { products: products.rows })//products.rows: Essa propriedade contém apenas os dados reais da consulta, sem os metadados de paginação.
+        return view.render('pages/products/type', { products: products.rows, ids })//products.rows: Essa propriedade contém apenas os dados reais da consulta, sem os metadados de paginação.
     }
 
     async show({ params, view, auth }: HttpContext) {
@@ -61,6 +88,10 @@ export default class ProductsController {
 
         sum = sum/nums.length
         sum = Math.round(sum)
+        if(Number.isNaN(sum))
+        {
+            sum = 0;
+        }
         console.log(sum)
         product.merge({rate: sum})
         await product.save()
@@ -99,11 +130,11 @@ export default class ProductsController {
         return view.render('pages/products/aval_posted')
     }
 
-    async store({ request }: HttpContext) {
+    async store({ request, view }: HttpContext) {
         const payload = request.only(['name', 'price', 'description', 'type'])
         //product é o minha entidade para consultar o banco de dados, que eu criei, na hora de criar o model
         const product = await Product.create(payload)//carga util
-        return product
+        return view.render('pages/home')
     }
 
     async destroy({ params }: HttpContext) {
@@ -174,16 +205,41 @@ export default class ProductsController {
        return datajson
     }
 
-    async mlivre({ request }:HttpContext){
+    async mlivre({ request, view }:HttpContext){
         const search = request.only(['product'])
         const data = await fetch(`https://api.mercadolibre.com/sites/MLB/search?q=${search.product}`) 
         const datajson = await data.json()
-        const ids = datajson.results.map(id => id.id)
-        const data_item = await fetch(`https://api.mercadolibre.com/items/${ids[1]}`)
+        let ids = datajson.results.map(id => id.id)
+        ids = ids.slice(0,10)
+        /*const data_item = await fetch(`https://api.mercadolibre.com/items/MLB5024520380`)
+        const data_item_json = await data_item.json()*/
         const data_description = await fetch(`https://api.mercadolibre.com/items/${ids[1]}/description`)
         const tojson = await data_description.json()
+        const products = []
+
+        for( const id of ids)
+        {
+            const data_item = await fetch(`https://api.mercadolibre.com/items/${id}`)
+            const data_item_json = await data_item.json()
+            const data_description = await fetch(`https://api.mercadolibre.com/items/${id}/description`)
+            const tojson = await data_description.json()
+            const query = await Product.query().where('name', data_item_json.title).first()
+            if(!query)
+            {
+                const product = {
+                    name: data_item_json.title,
+                    price: data_item_json.price,
+                    description: tojson.plain_text,
+                    type: null
+                }
+                products.push(product)
+            }
+
+        }
+
+
        
-       return datajson
+       return view.render('pages/products/accept_product', {products})
     }
 }
 

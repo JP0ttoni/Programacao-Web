@@ -3,10 +3,7 @@
   <head>
     <title>Site</title>  
   </head>
-  <body>    
-    <nav>
-      <a>Dê a sua avaliação</a>
-    </nav>
+  <body>
     <main>
         <form id = 'form' action="{{ route('user_login') }}" method="POST">
             <div>
@@ -14,7 +11,14 @@
             </div>
             <div>
                 Senha:<input type="password" name="password" placeholder="sua senha completo">
-            </div>>
+            </div>
+            <div>
+              @if(check == false)
+              {
+                usuário não encontrado, digite novamente
+              }
+              @endif
+            </div>
             <div>
                 <button type="submit">enviar</button>
             </div>

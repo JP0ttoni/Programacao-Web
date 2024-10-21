@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Site</title> 
+    <script>
+        let index = 0;
+
+        window.onload = function() {
+            console.log("A página foi totalmente carregada!");
+            document.getElementById("hiddenName").value = '{{ products[0].name }}';
+            document.getElementById("hiddenPrice").value = '{{ products[0].price }}';
+            document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[0].description) }}';
+        };
+
+        // Função que aumenta o valor e atualiza o texto
+        async function incrementar() {
+            index += 1; 
+            if(index > 4)
+            {
+                index = 4 ;
+            }
+            switch (index) {
+                case 0:
+                    document.getElementById("name").innerHTML = 'Nome: {{ products[0].name }}';
+                    document.getElementById("price").innerHTML = 'Preço: {{ products[0].price }}';
+                    document.getElementById("description").innerHTML = 'Descrição: {{ JSON.stringify(products[0].description) }}';
+                    document.getElementById("hiddenName").value = '{{ products[0].name }}';
+                    document.getElementById("hiddenPrice").value = '{{ products[0].price }}';
+                    document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[0].description) }}';
+                    break;
+                case 1:
+                    document.getElementById("name").innerHTML = 'Nome: {{ products[1].name }}';
+                    document.getElementById("price").innerHTML = 'Preço: {{ products[1].price }}';
+                    document.getElementById("description").innerHTML = 'Descrição: {{ JSON.stringify(products[1].description) }}';
+                    document.getElementById("hiddenName").value = '{{ products[1].name }}';
+                    document.getElementById("hiddenPrice").value = '{{ products[1].price }}';
+                    document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[1].description) }}';
+                    break;
+                case 2:
+                    document.getElementById("name").innerHTML = 'Nome: {{ products[2].name }}';
+                    document.getElementById("price").innerHTML = 'Preço: {{ products[2].price }}';
+                    document.getElementById("description").innerHTML = 'Descrição: {{ JSON.stringify(products[2].description) }}';
+                    document.getElementById("hiddenName").value = '{{ products[2].name }}';
+                    document.getElementById("hiddenPrice").value = '{{ products[2].price }}';
+                    document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[2].description) }}';
+                    break;
+                case 3:
+                    document.getElementById("name").innerHTML = 'Nome: {{ products[3].name }}';
+                    document.getElementById("price").innerHTML = 'Preço: {{ products[3].price }}';
+                    document.getElementById("description").innerHTML = 'Descrição: {{ JSON.stringify(products[3].description) }}';
+                    document.getElementById("hiddenName").value = '{{ products[3].name }}';
+                    document.getElementById("hiddenPrice").value = '{{ products[3].price }}';
+                    document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[3].description) }}';
+                    break;
+                case 4:
+                    document.getElementById("name").innerHTML = 'Nome: {{ products[4].name }}';
+                    document.getElementById("price").innerHTML = 'Preço: {{ products[4].price }}';
+                    document.getElementById("description").innerHTML = 'Descrição: {{ JSON.stringify(products[4].description) }}';
+                    document.getElementById("hiddenName").value = '{{ products[4].name }}';
+                    document.getElementById("hiddenPrice").value = '{{ products[4].price }}';
+                    document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[4].description) }}';
+                    break; // Incrementa a variável
+        }
+            document.getElementById("index").innerHTML = index;
+            
+    }
+
+    async function decrementar() {
+            index -= 1; 
+            if(index < 0)
+            {
+                index = 0 ;
+            }
+            switch (index) {
+                case 0:
+                    document.getElementById("name").innerHTML = 'Nome: {{ products[0].name }}';
+                    document.getElementById("price").innerHTML = 'Preço: {{ products[0].price }}';
+                    document.getElementById("description").innerHTML = 'Descrição: {{ JSON.stringify(products[0].description) }}';
+                    document.getElementById("hiddenName").value = '{{ products[0].name }}';
+                    document.getElementById("hiddenPrice").value = '{{ products[0].price }}';
+                    document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[0].description) }}';
+                    break;
+                case 1:
+                    document.getElementById("name").innerHTML = 'Nome: {{ products[1].name }}';
+                    document.getElementById("price").innerHTML = 'Preço: {{ products[1].price }}';
+                    document.getElementById("description").innerHTML = 'Descrição: {{ JSON.stringify(products[1].description) }}';
+                    document.getElementById("hiddenName").value = '{{ products[1].name }}';
+                    document.getElementById("hiddenPrice").value = '{{ products[1].price }}';
+                    document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[1].description) }}';
+                    break;
+                case 2:
+                    document.getElementById("name").innerHTML = 'Nome: {{ products[2].name }}';
+                    document.getElementById("price").innerHTML = 'Preço: {{ products[2].price }}';
+                    document.getElementById("description").innerHTML = 'Descrição: {{ JSON.stringify(products[2].description) }}';
+                    document.getElementById("hiddenName").value = '{{ products[2].name }}';
+                    document.getElementById("hiddenPrice").value = '{{ products[2].price }}';
+                    document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[2].description) }}';
+                    break;
+                case 3:
+                    document.getElementById("name").innerHTML = 'Nome: {{ products[3].name }}';
+                    document.getElementById("price").innerHTML = 'Preço: {{ products[3].price }}';
+                    document.getElementById("description").innerHTML = 'Descrição: {{ JSON.stringify(products[3].description) }}';
+                    document.getElementById("hiddenName").value = '{{ products[3].name }}';
+                    document.getElementById("hiddenPrice").value = '{{ products[3].price }}';
+                    document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[3].description) }}';
+                    break;
+                case 4:
+                    document.getElementById("name").innerHTML = 'Nome: {{ products[4].name }}';
+                    document.getElementById("price").innerHTML = 'Preço: {{ products[4].price }}';
+                    document.getElementById("description").innerHTML = 'Descrição: {{ JSON.stringify(products[4].description) }}';
+                    document.getElementById("hiddenName").value = '{{ products[4].name }}';
+                    document.getElementById("hiddenPrice").value = '{{ products[4].price }}';
+                    document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[4].description) }}';
+                    break; // Incrementa a variável
+        }
+            document.getElementById("index").innerHTML = index;
+            
+    }
+    </script> 
+  </head>
+  <body>
+    <main>
+        
+        <p id="name" name="name">Nome: {{ products[0].name }}</p>
+        <p id="price" name="price">Preço: {{ products[0].price }}</p>
+        <p id="description" name="description">Descrição: {{ JSON.stringify(products[0].description) }}</p>
+        <p id="index">0</p>
+        
+        <button onclick="decrementar()">anterior</button>
+        <button onclick="incrementar()">próximo</button>
+
+        <!-- Elemento onde o valor será exibido -->
+        <form action="{{ route('product_store') }}" method="POST">
+
+            <input type="hidden" name="name" id="hiddenName">
+            <input type="hidden" name="price" id="hiddenPrice">
+            <input type="hidden" name="description" id="hiddenDescription">
+
+            <div>
+                <p>qual o tipo do produto:</p>
+                <input type="radio" id="creatina" name="type" value="creatina">
+                <label for="creatina">creatina</label><br>
+
+                <input type="radio" id="pre treino" name="type" value="pre treino">
+                <label for="pre treino">pré treino</label><br>
+
+                <input type="radio" id="termogenico" name="type" value="termogenico">
+                <label for="termogenico">termogenico</label><br>
+            </div>
+
+            <input type="submit" value="Enviar">
+        </form>
+    </main>
+  </body>
+</html>

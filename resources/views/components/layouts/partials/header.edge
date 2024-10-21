@@ -2,22 +2,19 @@
     <div>
       <a href="/">home</a>
       <a href="{{ route('list_products') }}">Produtos</a>
-      {{ auth.user?.username }}
-      {{ await auth.check() }}
-
+      
       @if( !await auth.check())
       <a href="/login">login</a>
       <a href="/users/create_user"> criar usuario </a>
       @else
       <a href="/logout">logout</a>
       @if(auth.user.username  == 'admin')
-      <a>Criar Produto</a>
-        @endif
-
+      <a href="{{ route('page_new_product') }}">Criar Produto</a>
       @endif
-
-    </div>
-    <div>
-      <p>usuario</p>
+      
+      @endif
+      
+      <p>usuário: {{ auth.user?.username }}</p>
+      <p>ativo: {{ await auth.check() }}</p>
     </div>
   </nav>
