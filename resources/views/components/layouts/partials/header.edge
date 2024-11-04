@@ -8,13 +8,13 @@
       <a href="/users/create_user"> criar usuario </a>
       @else
       <a href="/logout">logout</a>
+      <a href="{{ route('edit_user') }}">editar perfil</a>
+      <p>usuário: {{ auth.user?.username }}</p>
       @if(auth.user.username  == 'admin')
       <a href="{{ route('page_new_product') }}">Criar Produto</a>
       @endif
       
       @endif
       
-      <p>usuário: {{ auth.user?.username }}</p>
-      <p>ativo: {{ await auth.check() }}</p>
     </div>
   </nav>

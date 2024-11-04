@@ -1,6 +1,4 @@
-@!component('components/layouts/app.edge')
-<!DOCTYPE html>
-<html>
+@layouts.app() 
   <head>
     <title>Site</title>  
   </head>
@@ -9,17 +7,26 @@
       <a></a>
     </nav>
     <main>
-      <div>
+      <div class="bg-slate-200">
         Lista de Produtos
       </div>
-      <div>
+      <div class="bg-slate-200">
         @each(product in products)
         <!--div>Produto A</div-->
           <li>
            <a href="{{ route('product_type') }}?type={{ product }}"> {{product}}</a>
           </li>
         @end
+        
+        @!input({
+          type: 'text', 
+          name: 'name',
+          required: true,
+        })
+        @button( {name: 'olaa'} )
+        oiiii
+        @end
       </div>
     </main>
   </body>
-</html>
+@end

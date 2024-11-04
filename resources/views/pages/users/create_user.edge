@@ -22,9 +22,16 @@
                 Email:<input type="email" name="email" placeholder="seu nome email">
             </div>
             <div>
+                @if( verify )
+                já existe uma conta com esse email
+                @endif
+            </div>
+            <div>
                 <button type="submit">enviar</button>
             </div>
         </form>
+
+        <a href="/">cancelar</a>
 
         <script>
             document.getElementById('form').addEventListener('keydown', function(event) {

@@ -3,25 +3,26 @@
   <head>
     <title>Site</title>  
   </head>
-  <body>
+  <body>    
+    <nav>
+      <a>escreva apenas nos dados que deseja mudar</a>
+    </nav>
     <main>
-        <form id = 'form' action="{{ route('user_login') }}" method="POST">
+        <form id = 'form' action="{{ route('user_merge') }}" method="POST">
             <div>
-                E-mail:<input type="email" name="email" placeholder="seu E-mail">
+                Nome Completo:<input type="text" name="fullName" placeholder="seu novo nome completo">
             </div>
             <div>
-                Senha:<input type="password" name="password" placeholder="sua senha">
+                Senha:<input type="password" name="password" placeholder="sua nova senha completa">
             </div>
             <div>
-              @if(check == false)
-                usuário não encontrado, digite novamente
-              @endif
+                Nome de usuário:<input type="text" name="username" placeholder="seu novo nome de usuário">
             </div>
             <div>
                 <button type="submit">enviar</button>
             </div>
+            <a href="/">cancelar</a>
         </form>
-        <a href="/">cancelar</a>
 
         <script>
             document.getElementById('form').addEventListener('keydown', function(event) {
@@ -29,6 +30,7 @@
                     event.preventDefault();
                 }
             })
+
         </script>
     </main>
   </body>

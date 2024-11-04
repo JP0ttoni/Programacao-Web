@@ -9,6 +9,9 @@ export default class Aval extends BaseModel {
   declare person_name: string 
 
   @column()
+  declare user_email: string
+
+  @column()
   declare product_id: number
 
   @column()

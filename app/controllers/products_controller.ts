@@ -1,10 +1,13 @@
 import Aval from '#models/aval'
 import Product from '#models/product'
+import { createPostValidator, createProductValidator } from '#validators/product'
 import auth from '@adonisjs/auth/services/main'
 import type { HttpContext } from '@adonisjs/core/http'
 import { debug } from 'console'
 import { request } from 'http'
 import { title } from 'process'
+import { products_type } from '../globalVar.js'
+
 
 export default class ProductsController {
     //pegando info de API
@@ -14,11 +17,10 @@ export default class ProductsController {
             await auth.authenticate()
         }
 
-        const products = ['creatina', 'pre treino', 'termogenico']
 
         //await auth.use('web').logout()
 
-        return view.render('pages/products/index', {products})
+        return view.render('pages/products/index', {products: products_type})
 
     }
 
@@ -30,7 +32,7 @@ export default class ProductsController {
 
         const payload = request.only(['type'])
         console.log(payload)
-        const url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${payload.type}&type=video&videoDuration=medium&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
+        const url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${payload.type}&type=video&videoDuration=medium&regionCode=BR&relevanceLanguage=pt&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
         const data = await url.json()
         const videoIds = data.items.map(item => item.id.videoId).filter(videoID => videoID !== undefined && videoID !== null);
         let ids = []
@@ -113,15 +115,22 @@ export default class ProductsController {
         }
         const user_id = request.only(['user_id'])
         //const user_name = Aval.query().where('id', 'like', `${user_id}`)
-        return view.render('pages/products/aval', {product_id: params.id, user_name: auth.user?.fullName})
+        return view.render('pages/products/aval', {product_id: params.id, user_name: auth.user?.fullName, user_email: auth.user?.email})
     }
 
-    async aval_post({params, request, view, auth }: HttpContext)
+    async aval_post({params, request, view, auth, response }: HttpContext)
     {
         if(await auth.check()){
             await auth.authenticate()
         }
-        let payload = request.only(['person_name', 'rate', 'comment', 'photo', 'product_id'])
+        try {
+            await auth.authenticate()
+        } catch (error) {
+            // Se a autenticação falhar, redirecione para a página de login ou outra página
+            console.log('entrou, não')
+            return response.redirect('users/create_user'); // Substitua '/login' pela sua rota de login
+        }
+        let payload = request.only(['person_name', 'rate', 'comment', 'photo', 'product_id', 'user_email'])
         payload.rate = parseInt(request.input('rate'))
         payload.product_id = parseInt(params.id)
         await Aval.create(payload)
@@ -130,11 +139,28 @@ export default class ProductsController {
         return view.render('pages/products/aval_posted')
     }
 
-    async store({ request, view }: HttpContext) {
-        const payload = request.only(['name', 'price', 'description', 'type'])
+    async store({ request, view, response, auth, session }: HttpContext) {
+        if(await auth.check())
+            {
+                if(auth.user?.username != 'admin')
+                {
+                    return response.redirect('/')
+                }
+            }else{
+                return response.redirect('/')
+            }
+        const payload = await createProductValidator.validate(request.all())
+        console.log(payload)
+        //request.only(['name', 'price', 'description', 'type'])
         //product é o minha entidade para consultar o banco de dados, que eu criei, na hora de criar o model
-        const product = await Product.create(payload)//carga util
-        return view.render('pages/home')
+        try {
+            const product = await Product.create(payload)//carga util
+            //session.flash({ success: 'Usuário cadastrado com sucesso!' })
+        } catch (error) {
+            //session.flash({ error: 'Erro ao cadastrar usuário. Tente novamente.' })
+            return response.redirect('back')
+        }
+        return response.redirect('/')
     }
 
     async destroy({ params }: HttpContext) {
@@ -205,7 +231,16 @@ export default class ProductsController {
        return datajson
     }
 
-    async mlivre({ request, view }:HttpContext){
+    async mlivre({ request, view, auth, response }:HttpContext){
+        if(await auth.check())
+            {
+                if(auth.user?.username != 'admin')
+                {
+                    return response.redirect('/')
+                }
+            }else{
+                return response.redirect('/')
+            }
         const search = request.only(['product'])
         const data = await fetch(`https://api.mercadolibre.com/sites/MLB/search?q=${search.product}`) 
         const datajson = await data.json()
@@ -239,7 +274,7 @@ export default class ProductsController {
 
 
        
-       return view.render('pages/products/accept_product', {products})
+       return view.render('pages/products/accept_product', {products, produtos: products_type})
     }
 }
 

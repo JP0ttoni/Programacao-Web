@@ -9,6 +9,7 @@ export default class extends BaseSchema {
       table.increments('id')
       table.text('comment')
       table.text('photos')
+      table.string('user_email', 254).notNullable()
       table.decimal('rate').notNullable
       table.string('person_name').notNullable
       table.decimal('product_id').notNullable

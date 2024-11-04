@@ -1,0 +1,1 @@
+export const products_type = ['creatina', 'pre treino', 'termogenico', 'whey protein', 'hipercalorico']

@@ -6,10 +6,10 @@
   </head>
   <body>    
     <nav>
-      <a>Dê a sua avaliação</a>
+      <a>Dê a sua avaliação  {{ user_email }} </a>
     </nav>
     <main>
-        <form id = 'form' action="{{ route('product_post_aval', { id: product_id }) }}?person_name={{ user_name }}" method="POST">
+        <form id = 'form' action="{{ route('product_post_aval', { id: product_id }) }}?person_name={{ user_name }}&user_email={{ user_email }}" method="POST">
             <div>
                 <input name="rate" type="range" id="rangeInput" min="1" max="5" step="1" value="3" oninput="updateValue(this.value)">
                 <span id="rangeValue">3</span>

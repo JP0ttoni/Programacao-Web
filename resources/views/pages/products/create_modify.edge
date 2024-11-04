@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Site</title>  
+  </head>
+  <body>    
+    <nav>
+      <a>crie o produto</a>
+    </nav>
+    <main>
+      {{ inspect(flashMessages.all()) }}
+        <form action="{{ route('product_store') }}" method="POST">
+            <div>
+                Nome do produto:<input type="text" name="name">
+                <div>
+                  @inputError('name')
+                  {{ $messages }}
+                  @end
+                </div>
+            </div>
+            <div>
+                Preço:<input type="number" name="price" step=".01">
+                <div>
+                  @inputError('price')
+                  {{ $messages }}
+                  @end
+                </div>
+            </div>
+            <div>
+                descrição:<input type="text" name="description">
+                <div>
+                  @inputError('description')
+                  {{ $messages }}
+                  @end
+                </div>
+            </div>
+            <div>
+                <p>qual o tipo do produto:</p>
+                @each(produto in produtos)
+                <input type="radio" id="{{ produto }}" name="type" value="{{ produto }}">
+                <label for="{{ produto }}">{{ produto }}</label><br>
+                @end
+                <p class="text-xs text-red-500">
+                  @inputError('type')
+                  {{ $messages }}
+                  @end
+                </p>
+            </div>
+            <input type="submit" value="Enviar">
+        </form>
+        <a href="/">cancelar</a>
+    </main>
+  </body>
+</html>
