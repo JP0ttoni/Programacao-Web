@@ -1,20 +1,23 @@
-<nav>
+<nav class="bg-white shadow-md p-4">
+  <div class="container mx-auto flex justify-between items-center">
+    <div class="text-2xl font-bold text-gray-800">
+      <a href="/">Meu Site</a>
+    </div>
     <div>
-      <a href="/">home</a>
-      <a href="{{ route('list_products') }}">Produtos</a>
+      <a href="{{ route('list_products') }}" class="text-gray-600 hover:text-blue-500 px-4">Produtos</a>
       
       @if( !await auth.check())
-      <a href="/login">login</a>
-      <a href="/users/create_user"> criar usuario </a>
+      <a href="/login" class="text-gray-600 hover:text-blue-500 px-4">Login</a>
+      <a href="/users/create_user" class="text-gray-600 hover:text-blue-500 px-4">Criar Usuário</a>
       @else
-      <a href="/logout">logout</a>
-      <a href="{{ route('edit_user') }}">editar perfil</a>
-      <p>usuário: {{ auth.user?.username }}</p>
-      @if(auth.user.username  == 'admin')
-      <a href="{{ route('page_new_product') }}">Criar Produto</a>
-      @endif
+      <a href="/logout" class="text-gray-600 hover:text-blue-500 px-4">Logout</a>
+      <span class="text-gray-800"> {{ auth.user?.username }}</span>
+      <a href="{{ route('edit_user') }}" class="text-gray-600 hover:text-blue-500 px-4">Editar Perfil</a>
       
+      @if(auth.user.username == 'admin')
+      <a href="{{ route('page_new_product') }}" class="text-gray-600 hover:text-blue-500 px-4">Criar Produto</a>
       @endif
-      
+      @endif
     </div>
-  </nav>
+  </div>
+</nav>

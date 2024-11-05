@@ -1,35 +1,51 @@
+@vite(['resources/js/app.js', 'resources/css/app.css'])
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Site</title>  
-  </head>
-  <body>
-    <main>
-        <form id = 'form' action="{{ route('user_login') }}" method="POST">
-            <div>
-                E-mail:<input type="email" name="email" placeholder="seu E-mail">
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="/path/to/tailwind.css"> <!-- Link para seu CSS do Tailwind -->
+</head>
+<body class="flex items-center justify-center h-screen bg-gradient-to-r from-blue-500 to-purple-500">
+    <main class="bg-white rounded-lg shadow-lg p-10 w-96">
+        <h2 class="text-3xl font-bold text-center mb-8">Login</h2>
+        <form id="form" action="{{ route('user_login') }}" method="POST">
+            <div class="mb-5">
+                <label class="block text-gray-700">E-mail:</label>
+                @input({
+                    type: "email",
+                    name: "email",
+                    placeholder: "seu E-mail",
+                    class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                })
+                @end
             </div>
-            <div>
-                Senha:<input type="password" name="password" placeholder="sua senha">
+            <div class="mb-5">
+                <label class="block text-gray-700">Senha:</label>
+                @input({
+                    type: "password",
+                    name: "password",
+                    placeholder: "sua senha",
+                    class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                })
+                @end
             </div>
-            <div>
-              @if(check == false)
-                usuário não encontrado, digite novamente
-              @endif
-            </div>
-            <div>
-                <button type="submit">enviar</button>
-            </div>
+            @flashMessage('errors.login')
+                <div class="bg-red-500 text-white p-4 rounded mb-4">
+                    {{ $message }}
+                </div>
+            @end
+            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-200">Enviar</button>
         </form>
-        <a href="/">cancelar</a>
-
-        <script>
-            document.getElementById('form').addEventListener('keydown', function(event) {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                }
-            })
-        </script>
+        <a href="/" class="text-blue-600 mt-4 block text-center">Cancelar</a>
     </main>
-  </body>
+    <script>
+        document.getElementById('form').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        })
+    </script>
+</body>
 </html>
+
+

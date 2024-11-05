@@ -81,7 +81,7 @@ router.group(()=>{
 
 //router.get('/yt', [ProductsController, 'yt'])
 //router.get('/health', [ProductsController, 'health'])
-router.get('/mlivre', [ProductsController, 'mlivre']).use(middleware.auth())
+router.get('/mlivre', [ProductsController, 'mlivre'])
 
 router.get('/', async ({ view, auth, request, response }) => {
 

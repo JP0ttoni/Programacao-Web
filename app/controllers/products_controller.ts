@@ -52,7 +52,7 @@ export default class ProductsController {
             }
         }
 
-        ids = ids.slice(0,5)
+        ids = ids.slice(0,3)
 
         console.log(ids)
 

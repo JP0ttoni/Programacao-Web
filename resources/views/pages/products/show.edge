@@ -1,46 +1,46 @@
-@!component('components/layouts/app.edge')
+@layouts.app() 
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Site</title>  
-  </head>
-  <body>    
-    <nav>
-      <a>Produtos</a>
-    </nav>
-    <main>
-      <div>
-        Lista de Produtos
-      </div>
-      <div>
-        nome: {{ product.name }}
-      </div>
-      <div>
-        nota: {{ product.rate }}
-      </div>
-      <div>
-        descrição: {{ product.description }}
-      </div>
-      <div>
-        preço: {{ product.price }}
-      </div>
-      @if(await auth.check())
-      <form action="{{ route('product_aval', { id: product.id }) }}" method="POST">
-        <button> postar uma avaliação </button>
-      </form>
-      @endif
-      <div>
-        Avaliações
-        <div>
-          @each(aval in avals)
-            <div>
-              nome:{{ aval.person_name }}&nbsp;
-              nota:{{ aval.rate }}&nbsp;
-              comentário: {{ aval.comment }}&nbsp;
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Detalhes do Produto</title>
+    <link rel="stylesheet" href="/path/to/tailwind.css"> <!-- Link para seu CSS do Tailwind -->
+</head>
+<body class="bg-gray-100">
+    <main class="container mx-auto p-8">
+        <div class="bg-white shadow-md rounded-lg p-6 mb-8">
+            <h1 class="text-3xl font-bold mb-4">{{ product.name }}</h1>
+            <img src="{{ product.image_url }}" alt="{{ product.name }} - Imagem" class="w-full h-64 object-cover rounded-md mb-4">
+            <div class="flex items-center mb-4">
+                <span class="text-lg font-semibold">Nota: </span>
+                <span class="ml-2 text-xl text-yellow-500">{{ product.rate }}</span>
             </div>
-          @endeach
+            <p class="text-gray-700 mb-4"><strong>Descrição:</strong> {{ product.description }}</p>
+            <p class="text-lg font-bold mb-4"><strong>Preço:</strong> R$ {{ product.price }}</p>
+
+            @if(await auth.check())
+                <form action="{{ route('product_aval', { id: product.id }) }}" method="POST" class="mt-4">
+                    <button type="submit" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-200">Postar uma Avaliação</button>
+                </form>
+            @endif
         </div>
-      </div>
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-2xl font-bold mb-4">Avaliações</h2>
+            <div>
+                @each(aval in avals)
+                    <div class="border-b border-gray-300 py-2">
+                        <div class="flex justify-between">
+                            <span class="font-semibold">{{ aval.person_name }}</span>
+                            <span class="text-yellow-500">{{ aval.rate }}</span>
+                        </div>
+                        <p class="text-gray-700">{{ aval.comment }}</p>
+                    </div>
+                @endeach
+            </div>
+        </div>
     </main>
-  </body>
+</body>
 </html>
+@end

@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Site</title>  
-    @vite('resources/js/app.js')
-    @vite('resources/js/app.css')
+    <title>Ruralmerce</title>
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
+
   </head>
-  <body>    
-    @include('components/layouts/partials/header')
-    
-    {{{ await $slots.main() }}}
+  <body>
+      <div>
+        @include('components/layouts/partials/header')
+
+        <div>
+          {{{ await $slots.main() }}}
+        </div>
+      </div>
+    </section>
   </body>
 </html>

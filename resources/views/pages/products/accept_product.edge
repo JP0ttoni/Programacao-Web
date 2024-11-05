@@ -1,3 +1,4 @@
+@layouts.app() 
 <!DOCTYPE html>
 <html>
   <head>
@@ -113,40 +114,49 @@
                     document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[4].description) }}';
                     break; // Incrementa a variável
         }
-            document.getElementById("index").innerHTML = index;
             
     }
     </script> 
-  </head>
-  <body>
-    <main>
-        
-        <p id="name" name="name">Nome: {{ products[0].name }}</p>
-        <p id="price" name="price">Preço: {{ products[0].price }}</p>
-        <p id="description" name="description">Descrição: {{ JSON.stringify(products[0].description) }}</p>
-        <p id="index">0</p>
-        
-        <button onclick="decrementar()">anterior</button>
-        <button onclick="incrementar()">próximo</button>
-
-        <!-- Elemento onde o valor será exibido -->
-        <form action="{{ route('product_store') }}" method="POST">
-
-            <input type="hidden" name="name" id="hiddenName">
-            <input type="hidden" name="price" id="hiddenPrice">
-            <input type="hidden" name="description" id="hiddenDescription">
-
-            <div>
-                <p>qual o tipo do produto:</p>
-                @each(produto in produtos)
-                <input type="radio" id="{{ produto }}" name="type" value="{{ produto }}">
-                <label for="{{ produto }}">{{ produto }}</label><br>
-                @end
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <title>Detalhes do Produto</title>
+    </head>
+    <body class="bg-gray-100 font-sans">
+    
+        <main class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
+            <h1 class="text-2xl font-bold mb-4">Detalhes do Produto</h1>
+    
+            <p id="name" class="text-lg text-gray-800">Nome: {{ products[0].name }}</p>
+            <p id="price" class="text-lg text-gray-800">Preço: {{ products[0].price }}</p>
+            <p id="description" class="text-gray-600">Descrição: {{ JSON.stringify(products[0].description) }}</p>
+    
+            <div class="mt-4">
+                <button onclick="decrementar()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Anterior</button>
+                <button onclick="incrementar()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Próximo</button>
             </div>
-
-            <input type="submit" value="Enviar">
-        </form>
-        <a href="/">cancelar</a>
-    </main>
-  </body>
+    
+            <form action="{{ route('product_store') }}" method="POST" class="mt-6">
+                <input type="hidden" name="name" id="hiddenName">
+                <input type="hidden" name="price" id="hiddenPrice">
+                <input type="hidden" name="description" id="hiddenDescription">
+    
+                <div class="mt-4">
+                    <p class="font-semibold">Qual o tipo do produto:</p>
+                    @each(produto in produtos)
+                    <div class="flex items-center mt-2">
+                        <input type="radio" id="{{ produto }}" name="type" value="{{ produto }}" class="mr-2">
+                        <label for="{{ produto }}" class="text-gray-700">{{ produto }}</label>
+                    </div>
+                    @end
+                </div>
+    
+                <input type="submit" value="Enviar" class="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+            </form>
+    
+            <a href="/" class="text-red-500 mt-4 inline-block">Cancelar</a>
+        </main>
+    </body>
 </html>
+@end

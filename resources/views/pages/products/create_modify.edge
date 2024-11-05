@@ -1,54 +1,67 @@
+@layouts.app() 
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Site</title>  
+    <title>Criar Produto</title>  
   </head>
-  <body>    
-    <nav>
-      <a>crie o produto</a>
+  <body class="bg-gray-100">
+    <nav class="bg-gray-800 p-4">
+      <a href="/" class="text-white">Voltar para Home</a>
     </nav>
-    <main>
-      {{ inspect(flashMessages.all()) }}
-        <form action="{{ route('product_store') }}" method="POST">
-            <div>
-                Nome do produto:<input type="text" name="name">
-                <div>
-                  @inputError('name')
-                  {{ $messages }}
-                  @end
-                </div>
-            </div>
-            <div>
-                Preço:<input type="number" name="price" step=".01">
-                <div>
-                  @inputError('price')
-                  {{ $messages }}
-                  @end
-                </div>
-            </div>
-            <div>
-                descrição:<input type="text" name="description">
-                <div>
-                  @inputError('description')
-                  {{ $messages }}
-                  @end
-                </div>
-            </div>
-            <div>
-                <p>qual o tipo do produto:</p>
-                @each(produto in produtos)
-                <input type="radio" id="{{ produto }}" name="type" value="{{ produto }}">
-                <label for="{{ produto }}">{{ produto }}</label><br>
-                @end
-                <p class="text-xs text-red-500">
-                  @inputError('type')
-                  {{ $messages }}
-                  @end
-                </p>
-            </div>
-            <input type="submit" value="Enviar">
-        </form>
-        <a href="/">cancelar</a>
+    <main class="container mx-auto p-6">
+      <h1 class="text-3xl font-bold mb-4">Criar Novo Produto</h1>
+      <form action="{{ route('product_store') }}" method="POST" class="bg-white p-6 rounded-lg shadow-md">
+        <div class="mb-4">
+          <label class="block text-gray-700" for="name">Nome do Produto:</label>
+          @input({
+            type: 'text',
+            name: 'name',
+            class: 'mt-1 p-2 border border-gray-300 rounded w-full',
+          }) 
+          @end
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-gray-700" for="price">Preço:</label>
+          <input type="number" name="price" step=".01" class="mt-1 p-2 border border-gray-300 rounded w-full">
+          <div>
+            @inputError('price')
+            <p class="text-sm text-red-500">{{ $message }}</p>
+            @end
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700" for="description">Descrição:</label>
+          @input({
+            type: 'text',
+            name: 'description',
+            class: 'mt-1 p-2 border border-gray-300 rounded w-full',
+          }) 
+          @end
+        </div>
+
+        <div class="mb-4">
+          <p class="text-gray-700">Qual o tipo do produto:</p>
+          @each(produto in produtos)
+          <div class="flex items-center mb-2">
+            <input type="radio" id="{{ produto }}" name="type" value="{{ produto }}" class="mr-2">
+            <label for="{{ produto }}" class="text-gray-700">{{ produto }}</label>
+          </div>
+          @end
+          <p class="text-xs text-red-500">
+            @inputError('type')
+            {{ $messages }}
+            @end
+          </p>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <input type="submit" value="Enviar" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 cursor-pointer">
+          <a href="/" class="text-gray-500 hover:text-blue-500">Cancelar</a>
+        </div>
+      </form>
     </main>
   </body>
 </html>
+@end

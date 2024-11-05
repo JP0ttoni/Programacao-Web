@@ -49,7 +49,7 @@ export default class UserscontrollersController {
         return{message: 'not found'}
     }
 
-    async store({ request, view, auth, response }:HttpContext)
+    async store({ request, view, auth, response, session }:HttpContext)
     {
       if(await auth.check())
         {
@@ -63,7 +63,8 @@ export default class UserscontrollersController {
           await auth.use('web').login(data_user)
           await auth.authenticate()        
         } catch (error) {
-          return view.render('pages/users/create_user', { verify: true })
+          session.flash({ errors: { login: 'Não foi possível criar o usuário. E-mail já está em uso.' } })
+          return response.redirect().back()
         }
 
         if(auth.isAuthenticated)
@@ -77,28 +78,39 @@ export default class UserscontrollersController {
         return response.redirect('/')
     }
 
-    async login({ request, view, auth, response }: HttpContext)
+    async login({ request, view, auth, response, session }: HttpContext)
     {
       if(await auth.check())
         {
-            return response.redirect('/')
-        }
-      let check = true
-      const { email, password } = await createLoginValidator.validate(request.all())
-      //request.only(['email', 'password'])
-      const user = await User.query().where('email', email).first()// retorna null se não encontrar usuario
-      console.log(user)
-      
-      if (user) {
-        console.log(password)
-        if(await hash.verify(user.password, password))
-        {
-          await auth.use('web').login(user)
-          auth.authenticate()
           return response.redirect('/')
         }
+      let check = true
+      try{
+        const { email, password } = await createLoginValidator.validate(request.all())
+        console.log(`email: ${email}\npassword: ${password}`)
+  
+          const user = await User.query().where('email', email).first()// retorna null se não encontrar usuario
+          console.log(user)
+          if (user) {
+            console.log(password)
+            if(await hash.verify(user.password, password))
+            {
+              await auth.use('web').login(user)
+              auth.authenticate()
+              return response.redirect('/')
+            }else{
+              session.flashOnly(['email'])
+              session.flash({ errors: { login: 'Não encontramos nenhuma conta com essas credenciais.' } })
+              return response.redirect().back()
+            }
+          }
+
+      }catch(erro)
+      {
+        session.flash({ errors: { login: 'Não encontramos nenhuma conta com essas credenciais.' } })
+        return response.redirect().back()
       }
-      return view.render('pages/users/login', { check: false })
+      
     }
 
     async patch({ auth, request, view, response }:HttpContext)
