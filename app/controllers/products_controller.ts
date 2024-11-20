@@ -1,5 +1,4 @@
 import Aval from '#models/aval'
-import Product from '#models/product'
 import { createPostValidator, createProductValidator } from '#validators/product'
 import auth from '@adonisjs/auth/services/main'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -7,6 +6,7 @@ import { debug } from 'console'
 import { request } from 'http'
 import { title } from 'process'
 import { products_type } from '../globalVar.js'
+import Product from '#models/product'
 
 
 export default class ProductsController {
@@ -97,7 +97,7 @@ export default class ProductsController {
         console.log(sum)
         product.merge({rate: sum})
         await product.save()
-        return view.render('pages/products/show', { product, avals: avals })
+        return view.render('pages/products/show', { product, avals: avals, id: params.id })
     }
 
     async aval({ params, view, request, auth, response }: HttpContext)
@@ -140,6 +140,7 @@ export default class ProductsController {
     }
 
     async store({ request, view, response, auth, session }: HttpContext) {
+        console.log("entrou aqui no store")
         if(await auth.check())
             {
                 if(auth.user?.username != 'admin')
@@ -155,9 +156,7 @@ export default class ProductsController {
         //product é o minha entidade para consultar o banco de dados, que eu criei, na hora de criar o model
         try {
             const product = await Product.create(payload)//carga util
-            //session.flash({ success: 'Usuário cadastrado com sucesso!' })
         } catch (error) {
-            //session.flash({ error: 'Erro ao cadastrar usuário. Tente novamente.' })
             return response.redirect('back')
         }
         return response.redirect('/')
@@ -171,17 +170,35 @@ export default class ProductsController {
         return { sucess: `${params.id} removido` }
     }
 
-    async patch({ params, request }: HttpContext) {
-        const product = await Product.findOrFail(params.id)
-
-        const payload = await request.only(['name', 'price', 'description'])
-
-        product.merge(payload)//troca pelo campo
-
-        await product.save()//salvar a modificação no banco de dados
-
-        return product
+    async patch({ params, request, response }: HttpContext) {
+        // Extrair os dados do payload
+        const payload = request.only(['product_id', 'qntd']);
+    
+        // Buscar o produto pelo ID
+        const product = await Product.query().where('id', 'like', `${payload.product_id}`).first();
+    
+        // Verificar se o produto existe
+        if (!product) {
+            return response.status(404).send({ error: 'Product not found' });
+        }
+    
+        // Validar e converter a quantidade
+        const pay_qntd = parseInt(payload.qntd, 10);
+        if (isNaN(pay_qntd)) {
+            return response.status(400).send({ error: 'Invalid quantity provided' });
+        }
+    
+        // Atualizar a quantidade do produto
+        const new_qntd = product.qntd + pay_qntd;
+        product.merge({ qntd: new_qntd });
+    
+        // Salvar as alterações no banco de dados
+        await product.save();
+    
+        // Redirecionar para a rota de produtos
+        return response.redirect('/products');
     }
+    
 
     async yt({ view, request }: HttpContext) {
         const query = request.only(['video']).video 

@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product.name }} - Detalhes do Produto</title>
+    @if(auth.user.username == 'admin')
+    <form action="{{ route('add_stock') }}?product_id={{ id }}" method="POST">
+        <button type="submit" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 transition duration-200">adicionar ao estoque</button>
+    </form>
+      @endif
     <link rel="stylesheet" href="/path/to/tailwind.css"> <!-- Link para seu CSS do Tailwind -->
 </head>
 <body class="bg-gray-100">

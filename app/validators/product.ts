@@ -6,6 +6,7 @@ export const createProductValidator = vine.compile(
         name: vine.string(), 
         price: vine.number(),
         type: vine.string(),
-        description: vine.string()
+        description: vine.string(),
+        qntd: vine.number()
     })
 )

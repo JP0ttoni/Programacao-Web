@@ -1,0 +1,17 @@
+@layouts.app() 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head> <!-- Link para seu CSS do Tailwind -->
+</head>
+<body>
+    <form action="{{ route('stock_store') }}" method="POST">
+        quantas unidade você deseja adicionar no estoque??
+        <input type="number" name="qntd" value=0>
+        <input type="hidden" name="product_id" value="{{ product_id }}">
+        <div>
+            unidade atual no estoque: {{ qntd }}
+        </div>
+    </form>
+</body>
+</html>
+@end

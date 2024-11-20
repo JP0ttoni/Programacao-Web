@@ -71,12 +71,21 @@ router.group(()=>{
         return view.render('pages/products/create_modify', {check: false, produtos: products_type})
     }).as('page_new_product_modify')
 
+    router.post('/add_stock', async({ view, request }) => {
+        const id = await request.only(['product_id']).product_id
+        console.log(id)
+        const product = await Product.query().where('id', 'like', `${id}`).first();
+        const qntd = product?.qntd
+        return view.render('pages/products/add_stock', {product_id: id, qntd})
+
+    }).as('add_stock')
+
+    router.post('/stock_store', [ProductsController, 'patch']).as('stock_store')
     router.get('/:id', [ProductsController, 'show']).as('product_match')
     router.post('/', [ProductsController, 'store']).as('product_store')
     router.post('/:id', [ProductsController, 'aval']).as('product_aval')
     router.post('/:id/aval', [ProductsController, 'aval_post']).as('product_post_aval')
     router.delete('/:id', [ProductsController, 'destroy']).as('product_delete')
-    router.patch('/:id', [ProductsController, 'patch']).as('product_patch')
 }).prefix('products')
 
 //router.get('/yt', [ProductsController, 'yt'])
@@ -126,4 +135,8 @@ router.get('/logout', async ({ view, request, auth, response }) => {
     await auth.use('web').logout()
     return response.redirect('/')
 })
+
+router.group(()=>{
+    router.get('/', )
+}).prefix('cart')
 

@@ -9,6 +9,9 @@ export default class Product extends BaseModel {
   declare type: string
 
   @column()
+  declare qntd: number
+
+  @column()
   declare price: number
 
   @column()
