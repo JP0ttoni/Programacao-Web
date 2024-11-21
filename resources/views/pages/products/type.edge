@@ -19,7 +19,7 @@
         <h1 class="text-2xl font-bold mb-4">Lista de Produtos</h1>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @each(product in products)
-            @if(product.qntd > 0 || (product.qntd <= 0 && auth.user.username == 'admin'))
+            @if(product.qntd > 0 || (await auth.check() && product.qntd <= 0 && auth.user.username == 'admin'))
                 <div class="bg-white p-4 shadow rounded-lg">
                     <img src="{{ product.image_url }}" alt="{{ product.name }} - Imagem" class="w-full h-48 object-cover rounded-md mb-4">
                     <a href="{{ route('product_match', { id: product.id }) }}" class="text-blue-600 hover:text-blue-800 font-semibold">
