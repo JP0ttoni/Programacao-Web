@@ -2,29 +2,77 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Site</title>  
   </head>
-  <body>    
-    <nav>
-      <a>ola seja bem vindo</a>
-    </nav>
-    <main>
-      <form action="">
-        <div>
-          <button>Produtos</button>
+  <body class="bg-gray-100">
+
+    <!-- Hero Section -->
+    <header class="bg-blue-600 text-white text-center py-16">
+        <h1 class="text-4xl font-bold">Welcome to E-Shop</h1>
+        <p class="mt-4 text-lg">Find the best deals on your favorite products</p>
+    </header>
+
+    <!-- Carrossel -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="relative">
+            <!-- Slides Wrapper -->
+            <div id="carousel" class="flex overflow-hidden w-full">
+                <!-- Item 1 -->
+                <div class="w-full flex-shrink-0">
+                    <img src="https://via.placeholder.com/800x400" alt="Product 1" class="rounded-lg shadow-md w-full">
+                </div>
+                <!-- Item 2 -->
+                <div class="w-full flex-shrink-0">
+                    <img src="https://via.placeholder.com/800x400/ff7f7f" alt="Product 2" class="rounded-lg shadow-md w-full">
+                </div>
+                <!-- Item 3 -->
+                <div class="w-full flex-shrink-0">
+                    <img src="https://via.placeholder.com/800x400/87cefa" alt="Product 3" class="rounded-lg shadow-md w-full">
+                </div>
+                <!-- Item 4 -->
+                <div class="w-full flex-shrink-0">
+                    <img src="https://via.placeholder.com/800x400/32cd32" alt="Product 4" class="rounded-lg shadow-md w-full">
+                </div>
+            </div>
+
+            <!-- Navegação -->
+            <button id="prev" class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600">
+                &#8249;
+            </button>
+            <button id="next" class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600">
+                &#8250;
+            </button>
         </div>
-        <button>Sobre Nós</button>
-        <div>
-          creatina... blah blah blah
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <p>&copy; 2024 E-Shop. All rights reserved.</p>
         </div>
-        <div>
-          whey... blah blah blah
-        </div>
-        <div>
-          mais bem avaliados
-        </div>
-      </form>
-      
-    </main>
-  </body>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        const carousel = document.getElementById('carousel');
+        const prev = document.getElementById('prev');
+        const next = document.getElementById('next');
+
+        let currentIndex = 0;
+
+        const updateCarousel = () => {
+            const offset = currentIndex * carousel.clientWidth;
+            carousel.scrollTo({ left: offset, behavior: 'smooth' });
+        };
+
+        prev.addEventListener('click', () => {
+            currentIndex = (currentIndex === 0) ? carousel.children.length - 1 : currentIndex - 1;
+            updateCarousel();
+        });
+
+        next.addEventListener('click', () => {
+            currentIndex = (currentIndex === carousel.children.length - 1) ? 0 : currentIndex + 1;
+            updateCarousel();
+        });
+    </script>
+</body>
 </html>

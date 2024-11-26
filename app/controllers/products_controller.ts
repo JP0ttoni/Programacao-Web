@@ -2,11 +2,12 @@ import Aval from '#models/aval'
 import { createPostValidator, createProductValidator } from '#validators/product'
 import auth from '@adonisjs/auth/services/main'
 import type { HttpContext } from '@adonisjs/core/http'
-import { debug } from 'console'
+import { debug, log } from 'console'
 import { request } from 'http'
 import { title } from 'process'
 import { products_type } from '../globalVar.js'
 import Product from '#models/product'
+import ProductImage from '#models/product_image'
 
 
 export default class ProductsController {
@@ -57,7 +58,7 @@ export default class ProductsController {
         console.log(ids)
 
         const paginate = request.input('page', 1)//se n receber page, seta o default como 1
-        const limit = 10
+        const limit = 9
 
         const query = Product.query()
         if(payload.type && payload.type.length > 0)
@@ -81,25 +82,38 @@ export default class ProductsController {
         for(const aval of avals){
             nums.push(aval.rate)
         }
-        const product = await Product.findOrFail(params.id)
+        const product = await Product.query()
+      .where('id', params.id)
+      .preload('images') // Precarregar imagens relacionadas
+      .firstOrFail()
+
+      const product_images: string[] = []
+      product.images.forEach(image => {
+        product_images.push(image.imagePath)  // Aqui você acessa o caminho de cada imagem
+      })
+
         let sum = 0
         for(const num of nums)
         {
             sum += num
         }
 
+        console.log(product)
+        
         sum = sum/nums.length
-        sum = Math.round(sum)
+        const formatado = sum.toFixed(1)
+        sum = parseFloat(formatado)
+        
         if(Number.isNaN(sum))
-        {
-            sum = 0;
+            {
+                sum = 0;
+            }
+            console.log(sum)
+            product.merge({rate: sum})
+            await product.save()
+            return view.render('pages/products/show', { product, product_images , avals: avals, id: params.id })
         }
-        console.log(sum)
-        product.merge({rate: sum})
-        await product.save()
-        return view.render('pages/products/show', { product, avals: avals, id: params.id })
-    }
-
+        
     async aval({ params, view, request, auth, response }: HttpContext)
     {
         try {
@@ -140,7 +154,7 @@ export default class ProductsController {
     }
 
     async store({ request, view, response, auth, session }: HttpContext) {
-        console.log("entrou aqui no store")
+        console.log("entrou pra verificar o produto")
         if(await auth.check())
             {
                 if(auth.user?.username != 'admin')
@@ -150,15 +164,25 @@ export default class ProductsController {
             }else{
                 return response.redirect('/')
             }
-        const payload = await createProductValidator.validate(request.all())
-        console.log(payload)
+        const images = await request.only(["images"])
+        const imagens = images.images.split(',')
+        let payload = await createProductValidator.validate( request.all())
+        payload.description = payload.description.replace(/&quot;/g, '')
         //request.only(['name', 'price', 'description', 'type'])
         //product é o minha entidade para consultar o banco de dados, que eu criei, na hora de criar o model
         try {
             const product = await Product.create(payload)//carga util
+            for(const image of imagens){
+                await ProductImage.create({
+                    productId: product.id,
+                    imagePath: `${image}`,
+                  })
+            }
         } catch (error) {
             return response.redirect('back')
         }
+
+
         return response.redirect('/')
     }
 
@@ -282,12 +306,15 @@ export default class ProductsController {
                     name: data_item_json.title,
                     price: data_item_json.price,
                     description: tojson.plain_text,
+                    images: data_item_json.pictures.map(picture => picture.url),
                     type: null
                 }
                 products.push(product)
             }
 
         }
+
+        console.log(products[0].images)
 
 
        

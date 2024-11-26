@@ -1,23 +1,60 @@
 <nav class="bg-white shadow-md p-4">
   <div class="container mx-auto flex justify-between items-center">
+    <!-- Logo -->
     <div class="text-2xl font-bold text-gray-800">
       <a href="/">WB Supplements</a>
     </div>
-    <div>
+
+    <!-- Navegação -->
+    <div class="relative">
       <a href="{{ route('list_products') }}" class="text-gray-600 hover:text-blue-500 px-4">Produtos</a>
-      
+
       @if( !await auth.check())
+      <!-- Links para usuários não autenticados -->
       <a href="/login" class="text-gray-600 hover:text-blue-500 px-4">Login</a>
       <a href="/users/create_user" class="text-gray-600 hover:text-blue-500 px-4">Criar Usuário</a>
       @else
-      <a href="/logout" class="text-gray-600 hover:text-blue-500 px-4">Logout</a>
-      <span class="text-gray-800"> {{ auth.user?.username }}</span>
-      <a href="{{ route('edit_user') }}" class="text-gray-600 hover:text-blue-500 px-4">Editar Perfil</a>
-      
-      @if(auth.user.username == 'admin')
-      <a href="{{ route('page_new_product') }}" class="text-gray-600 hover:text-blue-500 px-4">Criar Produto</a>
-      @endif
+      <!-- Dropdown para usuários autenticados -->
+      <div class="relative inline-block">
+        <button id="userMenuButton" class="text-gray-800 font-semibold focus:outline-none hover:text-blue-500">
+          {{ auth.user?.username }}
+        </button>
+        <!-- Dropdown Menu -->
+        <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg hidden">
+          <a href="{{ route('edit_user') }}" class="block px-4 py-2 text-gray-600 hover:bg-blue-100 hover:text-blue-500">
+            Editar Perfil
+          </a>
+          <a href="/logout" class="block px-4 py-2 text-gray-600 hover:bg-blue-100 hover:text-blue-500">
+            Logout
+          </a>
+          @if(auth.user.username == 'admin')
+          <a href="{{ route('page_new_product') }}" class="block px-4 py-2 text-gray-600 hover:bg-blue-100 hover:text-blue-500">
+            Criar Produto
+          </a>
+          @endif
+        </div>
+      </div>
       @endif
     </div>
   </div>
 </nav>
+
+<script>
+  // Lógica para exibir/ocultar o dropdown ao clicar no nome do usuário
+  document.addEventListener('DOMContentLoaded', () => {
+    const userMenuButton = document.getElementById('userMenuButton');
+    const userDropdown = document.getElementById('userDropdown');
+
+    userMenuButton.addEventListener('click', () => {
+      // Alterna entre exibir e ocultar o dropdown
+      userDropdown.classList.toggle('hidden');
+    });
+
+    // Fecha o dropdown se o usuário clicar fora
+    document.addEventListener('click', (event) => {
+      if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+        userDropdown.classList.add('hidden');
+      }
+    });
+  });
+</script>

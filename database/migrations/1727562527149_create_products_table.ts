@@ -12,7 +12,7 @@ export default class extends BaseSchema {
       table.text("description").notNullable()   
       table.text('type').notNullable()
       table.integer('qntd')
-      table.decimal('rate')   
+      table.decimal('rate') 
       
       table.timestamp('created_at')
       table.timestamp('updated_at')
