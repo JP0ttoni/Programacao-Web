@@ -33,7 +33,7 @@ export default class ProductsController {
 
         const payload = request.only(['type'])
         console.log(payload)
-        const url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${payload.type}&type=video&videoDuration=medium&regionCode=BR&relevanceLanguage=pt&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
+        /*const url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${payload.type}&type=video&videoDuration=medium&regionCode=BR&relevanceLanguage=pt&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
         const data = await url.json()
         const videoIds = data.items.map(item => item.id.videoId).filter(videoID => videoID !== undefined && videoID !== null);
         let ids = []
@@ -55,7 +55,7 @@ export default class ProductsController {
 
         ids = ids.slice(0,3)
 
-        console.log(ids)
+        console.log(ids)*/
 
         const paginate = request.input('page', 1)//se n receber page, seta o default como 1
         const limit = 9
@@ -68,7 +68,7 @@ export default class ProductsController {
 
         const products = await query.paginate(paginate, limit)
 
-        return view.render('pages/products/type', { products: products.rows, ids })//products.rows: Essa propriedade contém apenas os dados reais da consulta, sem os metadados de paginação.
+        return view.render('pages/products/type', { products: products.rows })//adicionar ids//products.rows: Essa propriedade contém apenas os dados reais da consulta, sem os metadados de paginação.
     }
 
     async show({ params, view, auth }: HttpContext) {
@@ -150,7 +150,7 @@ export default class ProductsController {
         await Aval.create(payload)
         console.log(request.all())
 
-        return view.render('pages/products/aval_posted')
+        return response.redirect('back')
     }
 
     async store({ request, view, response, auth, session }: HttpContext) {

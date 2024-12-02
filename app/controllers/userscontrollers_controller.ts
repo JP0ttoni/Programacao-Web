@@ -92,12 +92,11 @@ export default class UserscontrollersController {
           const user = await User.query().where('email', email).first()// retorna null se não encontrar usuario
           console.log(user)
           if (user) {
-            console.log(password)
             if(await hash.verify(user.password, password))
             {
               await auth.use('web').login(user)
               auth.authenticate()
-              return response.redirect('/')
+              return response.redirect().back()
             }else{
               session.flashOnly(['email'])
               session.flash({ errors: { login: 'Não encontramos nenhuma conta com essas credenciais.' } })
