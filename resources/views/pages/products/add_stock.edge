@@ -1,17 +1,59 @@
-@layouts.app() 
+@layouts.app()
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head> <!-- Link para seu CSS do Tailwind -->
+
+<head>
+    <!-- Link para o seu CSS do Tailwind -->
+    <script>
+        function validarQuantidade() {
+            const qntd = document.getElementById('qntd').value;
+            const operation = document.getElementById('operation').value;
+            const estoqueAtual = parseInt(document.getElementById('estoque_atual').innerText);
+
+            // Se a operação for "remove", verifica se a quantidade não excede o estoque atual
+            if (operation === 'remove' && parseInt(qntd) > estoqueAtual) {
+                alert('A quantidade para remoção não pode ser maior que o estoque atual!');
+                return false; // Impede o envio do formulário
+            }
+            return true; // Permite o envio do formulário
+        }
+    </script>
 </head>
-<body>
-    <form action="{{ route('stock_store') }}" method="POST">
-        quantas unidade você deseja adicionar no estoque??
-        <input type="number" name="qntd" value=0>
-        <input type="hidden" name="product_id" value="{{ product_id }}">
-        <div>
-            unidade atual no estoque: {{ qntd }}
-        </div>
-    </form>
+
+<body class="bg-gray-100">
+
+    <div class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
+        <h1 class="text-2xl font-bold mb-4">Gerenciar Estoque do Produto</h1>
+
+        <form action="{{ route('stock_store') }}" method="POST" onsubmit="return validarQuantidade()">
+            <div class="mb-4">
+                <label for="qntd" class="text-lg text-gray-800">Quantas unidades você deseja adicionar ou remover?</label>
+                <input type="number" id="qntd" name="qntd" value="0" min="0" class="mt-2 px-4 py-2 border rounded-md w-full" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="operation" class="text-lg text-gray-800">Operação:</label>
+                <select name="operation" id="operation" class="mt-2 px-4 py-2 border rounded-md w-full">
+                    <option value="add">Adicionar ao estoque</option>
+                    <option value="remove">Remover do estoque</option>
+                </select>
+            </div>
+
+            <input type="hidden" name="product_id" value="{{ product_id }}">
+
+            <div class="mb-4 text-lg text-gray-800">
+                Quantidade atual no estoque: <span id="estoque_atual" class="font-semibold">{{ qntd }}</span>
+            </div>
+
+            <div class="mt-6 flex justify-between">
+                <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600">
+                    Confirmar
+                </button>
+            </div>
+        </form>
+    </div>
+
 </body>
+
 </html>
 @end

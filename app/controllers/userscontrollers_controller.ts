@@ -80,34 +80,37 @@ export default class UserscontrollersController {
 
     async login({ request, view, auth, response, session }: HttpContext)
     {
+      console.log('entrou nessa caralha')
       if(await auth.check())
-        {
+      {
           return response.redirect('/')
-        }
-      let check = true
+      }
       try{
         const { email, password } = await createLoginValidator.validate(request.all())
-        console.log(`email: ${email}\npassword: ${password}`)
-  
-          const user = await User.query().where('email', email).first()// retorna null se não encontrar usuario
-          console.log(user)
-          if (user) {
+        
+        const user = await User.query().where('email', email).first()// retorna null se não encontrar usuario
+        console.log(`email: ${user}\npassword: ${password}`)
+          if(user){
+            console.log("entrou1")
             if(await hash.verify(user.password, password))
             {
               await auth.use('web').login(user)
               auth.authenticate()
-              return response.redirect().back()
+              return response.redirect('/')
             }else{
+              console.log("entrou2")
               session.flashOnly(['email'])
               session.flash({ errors: { login: 'Não encontramos nenhuma conta com essas credenciais.' } })
-              return response.redirect().back()
+              return response.redirect().back();
             }
           }
-
+          session.flash({ errors: { login: 'Não encontramos nenhuma conta com essas credenciais.' } })
+          return response.redirect().back();
       }catch(erro)
       {
+        console.log("entrou3")
         session.flash({ errors: { login: 'Não encontramos nenhuma conta com essas credenciais.' } })
-        return response.redirect().back()
+        return response.redirect().back();
       }
       
     }

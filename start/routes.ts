@@ -9,6 +9,7 @@
 
 import ProductsController from '#controllers/products_controller'
 import UserscontrollersController from '#controllers/userscontrollers_controller'
+import CartsController from '#controllers/carts_controller'
 import Product from '#models/product'
 import User from '#models/user'
 import router from '@adonisjs/core/services/router'
@@ -16,6 +17,7 @@ import { middleware } from '#start/kernel'
 import auth from '@adonisjs/auth/services/main'
 import { request } from 'http'
 import { products_type } from '../app/globalVar.js'
+import Cart from '#models/cart'
 
 console.log()
 
@@ -29,7 +31,7 @@ router.group(()=>{
             }
         return view.render('pages/users/create_user', { verify: false })
     })
-    router.post('/login', [UserscontrollersController, 'login']).as('user_login')
+    router.post('/login/validate', [UserscontrollersController, 'login']).as('user_login')
     router.get('/edit', async({ auth, view, response }) =>{
         if(!await auth.check())
             {
@@ -81,11 +83,11 @@ router.group(()=>{
     }).as('add_stock')
 
     router.post('/stock_store', [ProductsController, 'patch']).as('stock_store')
+    router.get('delete/:id', [ProductsController, 'destroy']).as('product_delete')
     router.get('/:id', [ProductsController, 'show']).as('product_match')
     router.post('/', [ProductsController, 'store']).as('product_store')
     router.post('/:id', [ProductsController, 'aval']).as('product_aval')
     router.post('/:id/aval', [ProductsController, 'aval_post']).as('product_post_aval')
-    router.delete('/:id', [ProductsController, 'destroy']).as('product_delete')
 }).prefix('products')
 
 //router.get('/yt', [ProductsController, 'yt'])
@@ -136,7 +138,27 @@ router.get('/logout', async ({ view, request, auth, response }) => {
     return response.redirect('/')
 })
 
+router.get('/aval/delete/:id',[ProductsController, 'aval_delete']).as('delete_aval')
+
 router.group(()=>{
-    router.get('/', )
+    router.post('/create', [CartsController, 'store']).as('cart_create')
+    router.get('/', async({view, auth, response}) =>{
+        if(!await auth.check())
+        {
+            console.log("negado")
+            return response.redirect('/')
+        }
+        console.log('entrou em cart')
+        const user_cart = await Cart.query().where('User_id', '=', `${auth.user?.id}`)
+        if (user_cart.length > 0) {
+            console.log(user_cart[0].$extras.Product_id);  // Agora deve funcionar
+        } else {
+            console.log("Carrinho vazio ou sem resultados");
+        }
+        return view.render('pages/cart', {user_cart: user_cart})
+    }).as('cart')
+    router.get('delete/:id', [CartsController, 'destroy']).as('cart_delete')
+    router.post('/patch/:id', [CartsController, 'patch']).as('cart_patch')
+    router.get('/checkout', [CartsController, 'pay']).as('cart_pay')
 }).prefix('cart')
 

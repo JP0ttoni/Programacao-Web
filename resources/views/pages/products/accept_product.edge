@@ -12,25 +12,48 @@
     <body class="bg-gray-100 font-sans">
         
         <main class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-            <h1 class="text-2xl font-bold mb-4">Detalhes do Produto</h1>
+            <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Detalhes do Produto</h1>
             
-            <p id="name" class="text-lg text-gray-800">Nome: {{ products[0].name }}</p>
-            <p id="price" class="text-lg text-gray-800">Preço: {{ products[0].price }}</p>
-            <p id="description" class="text-gray-600">Descrição: {{ JSON.stringify(products[0].description) }}</p>
-            
-            <div class="mt-4">
-                <button onclick="decrementar()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Anterior</button>
-                <button onclick="incrementar()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Próximo</button>
+            <div class="mb-6">
+                <p id="name" class="text-lg text-gray-800 font-semibold">Nome: {{ products[0].name }}</p>
+            </div>
+        
+            <!-- Primeira Imagem e Controles de Navegação -->
+            <div class="flex items-center justify-center mb-6">
+                <!-- Botão Anterior -->
+                <button onclick="decrementar()" class="bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 mr-4 flex items-center justify-center">
+                    <!-- Seta para a esquerda -->
+                    <span class="text-white text-3xl">&#8592;</span>
+                </button>
+                
+                <!-- Imagem -->
+                <img id="image" src="" alt="primeira imagem" class="w-48 h-48 object-cover rounded-md shadow-md">
+        
+                <!-- Botão Próximo -->
+                <button onclick="incrementar()" class="bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 ml-4 flex items-center justify-center">
+                    <!-- Seta para a direita -->
+                    <span class="text-white text-3xl">&#8594;</span>
+                </button>
+            </div>
+        
+            <div class="mb-6">
+                <p id="price" class="text-lg text-gray-800 font-semibold">Preço: {{ products[0].price }}</p>
+            </div>
+        
+            <div class="mb-6">
+                <p id="description" class="text-gray-600">Descrição: {{ JSON.stringify(products[0].description) }}</p>
             </div>
             
-            <form action="{{ route('product_store') }}" method="POST" class="mt-6">
+            <!-- Formulário -->
+            <form action="{{ route('product_store') }}" method="POST" class="space-y-6">
                 <input type="hidden" name="name" id="hiddenName">
                 <input type="hidden" name="price" id="hiddenPrice">
                 <input type="hidden" name="description" id="hiddenDescription">
                 <input type="hidden" name="images" id="hiddenimages">
-                
-                <div class="mt-4">
-                    <p class="font-semibold">Qual o tipo do produto:</p>
+        
+                <!-- Tipo do Produto -->
+                <div>
+                    <p class="font-semibold text-lg">Qual o tipo do produto:</p>
                     @each(produto in produtos)
                     <div class="flex items-center mt-2">
                         <input type="radio" id="{{ produto }}" name="type" value="{{ produto }}" class="mr-2">
@@ -38,22 +61,20 @@
                     </div>
                     @end
                 </div>
-
+        
+                <!-- Quantidade -->
                 <div>
-                    quantas unidades?
-                    <input type="number" name="qntd" value=0>
+                    <label for="qntd" class="block text-lg font-semibold text-gray-700">Quantas unidades?</label>
+                    <input type="number" name="qntd" value="1" class="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
-
-                <div>
-                    @each(image in products.images)
-                        <img src="{{ image }}" alt="imagem">
-                    @end
-                </div>
-                
-                <input type="submit" value="Enviar" class="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+        
+                <!-- Botão Enviar -->
+                <input type="submit" value="Enviar" class="mt-4 bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 cursor-pointer w-full">
+        
             </form>
-    
-            <a href="/" class="text-red-500 mt-4 inline-block">Cancelar</a>
+            
+            <!-- Link de Cancelamento -->
+            <a href="/" class="text-red-500 mt-6 block text-center">Cancelar</a>
         </main>
         <script>
             let index = 0;
@@ -63,6 +84,7 @@
                 document.getElementById("hiddenName").value = '{{ products[0].name }}';
                 document.getElementById("hiddenPrice").value = '{{ products[0].price }}';
                 document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[0].description) }}';
+                document.getElementById("image").src = '{{ products[0].images[0] }}';
                 document.getElementById("hiddenimages").value = '{{ products[0].images }}';
             };
     
@@ -81,6 +103,7 @@
                         document.getElementById("hiddenName").value = '{{ products[0].name }}';
                         document.getElementById("hiddenPrice").value = '{{ products[0].price }}';
                         document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[0].description) }}';
+                        document.getElementById("image").src = '{{ products[0].images[0] }}';
                         document.getElementById("hiddenimages").value = '{{ products[0].images }}';
                         break;
                     case 1:
@@ -90,6 +113,7 @@
                         document.getElementById("hiddenName").value = '{{ products[1].name }}';
                         document.getElementById("hiddenPrice").value = '{{ products[1].price }}';
                         document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[1].description) }}';
+                        document.getElementById("image").src = '{{ products[1].images[0] }}';
                         document.getElementById("hiddenimages").value = '{{ products[1].images }}';
                         break;
                     case 2:
@@ -99,6 +123,7 @@
                         document.getElementById("hiddenName").value = '{{ products[2].name }}';
                         document.getElementById("hiddenPrice").value = '{{ products[2].price }}';
                         document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[2].description) }}';
+                        document.getElementById("image").src = '{{ products[2].images[0] }}';
                         document.getElementById("hiddenimages").value = '{{ products[2].images }}';
                         break;
                     case 3:
@@ -108,6 +133,7 @@
                         document.getElementById("hiddenName").value = '{{ products[3].name }}';
                         document.getElementById("hiddenPrice").value = '{{ products[3].price }}';
                         document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[3].description) }}';
+                        document.getElementById("image").src = '{{ products[3].images[0] }}';
                         document.getElementById("hiddenimages").value = '{{ products[3].images }}';
                         break;
                     case 4:
@@ -117,6 +143,7 @@
                         document.getElementById("hiddenName").value = '{{ products[4].name }}';
                         document.getElementById("hiddenPrice").value = '{{ products[4].price }}';
                         document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[4].description) }}';
+                        document.getElementById("image").src = '{{ products[4].images[0] }}';
                         document.getElementById("hiddenimages").value = '{{ products[4].images }}';
                         break; // Incrementa a variável
             }
@@ -138,6 +165,7 @@
                         document.getElementById("hiddenName").value = '{{ products[0].name }}';
                         document.getElementById("hiddenPrice").value = '{{ products[0].price }}';
                         document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[0].description) }}';
+                        document.getElementById("image").src = '{{ products[0].images[0] }}';
                         document.getElementById("hiddenimages").value = '{{ products[0].images }}';
                         break;
                     case 1:
@@ -147,6 +175,7 @@
                         document.getElementById("hiddenName").value = '{{ products[1].name }}';
                         document.getElementById("hiddenPrice").value = '{{ products[1].price }}';
                         document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[1].description) }}';
+                        document.getElementById("image").src = '{{ products[1].images[0] }}';
                         document.getElementById("hiddenimages").value = '{{ products[1].images }}';
                         break;
                     case 2:
@@ -156,6 +185,7 @@
                         document.getElementById("hiddenName").value = '{{ products[2].name }}';
                         document.getElementById("hiddenPrice").value = '{{ products[2].price }}';
                         document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[2].description) }}';
+                        document.getElementById("image").src = '{{ products[2].images[0] }}';
                         document.getElementById("hiddenimages").value = '{{ products[2].images }}';
                         break;
                     case 3:
@@ -165,6 +195,7 @@
                         document.getElementById("hiddenName").value = '{{ products[3].name }}';
                         document.getElementById("hiddenPrice").value = '{{ products[3].price }}';
                         document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[3].description) }}';
+                        document.getElementById("image").src = '{{ products[3].images[0] }}';
                         document.getElementById("hiddenimages").value = '{{ products[3].images }}';
                         break;
                     case 4:
@@ -174,6 +205,7 @@
                         document.getElementById("hiddenName").value = '{{ products[4].name }}';
                         document.getElementById("hiddenPrice").value = '{{ products[4].price }}';
                         document.getElementById("hiddenDescription").value = '{{ JSON.stringify(products[4].description) }}';
+                        document.getElementById("image").src = '{{ products[4].images[0] }}';
                         document.getElementById("hiddenimages").value = '{{ products[4].images }}';
                         break; // Incrementa a variável
             }

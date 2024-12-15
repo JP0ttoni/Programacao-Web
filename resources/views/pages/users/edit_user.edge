@@ -1,37 +1,90 @@
+
+
+@vite(['resources/js/app.js', 'resources/css/app.css'])
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Site</title>  
-  </head>
-  <body>    
-    <nav>
-      <a>escreva apenas nos dados que deseja mudar</a>
-    </nav>
-    <main>
-        <form id = 'form' action="{{ route('user_merge') }}" method="POST">
-            <div>
-                Nome Completo:<input type="text" name="fullName" placeholder="seu novo nome completo">
-            </div>
-            <div>
-                Senha:<input type="password" name="password" placeholder="sua nova senha completa">
-            </div>
-            <div>
-                Nome de usuário:<input type="text" name="username" placeholder="seu novo nome de usuário">
-            </div>
-            <div>
-                <button type="submit">enviar</button>
-            </div>
-            <a href="/">cancelar</a>
-        </form>
+<head>
+    <title>Editar Usuário</title>
+    <link rel="stylesheet" href="/path/to/tailwind.css"> <!-- Link para seu CSS do Tailwind -->
+</head>
+<body class="">
+  <main class="flex h-screen">
 
-        <script>
-            document.getElementById('form').addEventListener('keydown', function(event) {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                }
+    <!-- Lado esquerdo - Imagem -->
+    <div class="hidden lg:flex items-center justify-center flex-1 bg-black text-black">
+      <div class="w-full h-full">
+        <img src="{{ asset('resources/views/images/WB_gorilla-removebg-preview.png') }}" alt="" class="w-full h-full object-cover">
+      </div>
+    </div>
+  
+    <!-- Lado direito - Formulário de login -->
+    <div class="w-full lg:w-1/2 bg-black flex items-center justify-center">
+      <div class="max-w-md w-full p-6">
+        <h1 class="text-4xl font-semibold mb-6 text-white text-center">Editar Usuário</h1>
+        <h1 class="m w-full font-semibold mb-6 text-white">preencha apenas os campos que deseja mudar:</h1>
+        <div class="mt-4 flex flex-col lg:flex-row items-center justify-between">
+          <div class="w-full lg:w-1/2 mb-2 lg:mb-0">
+          </div>
+          <div class="w-full lg:w-1/2 ml-0 lg:ml-2">
+            <!-- Optional content here -->
+          </div>
+        </div>
+        <form id="form" action="{{ route('user_merge') }}" method="POST" class="space-y-4">
+          <!-- Campos do formulário -->
+          <div class="mb-4">
+            <label for="fullName" class="block text-sm font-medium text-gray-100">Nome Completo:</label>
+            @input({
+                type: "text",
+                name: "fullName", 
+                class: "mt-1 p-2 w-full text-white border bg-transparent  focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
             })
-
-        </script>
-    </main>
-  </body>
+            @end
+        </div>
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-100">Senha</label>
+            <input type="password" id="password" name="password" class="mt-1 p-2 w-full text-white border bg-transparent  focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+          </div>
+          <div class="mb-4">
+            <label for="username" class="block text-sm font-medium text-gray-100">Nome de Usuário:</label>
+            @input({
+                type: "text",
+                name: "username", 
+                class: "mt-1 p-2 w-full text-white border bg-transparent  focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+            })
+            @end
+        </div>
+        <div class="mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-100">Email:</label>
+            @input({
+                type: "email",
+                name: "email", 
+                class: "mt-1 p-2 w-full text-white border bg-transparent  focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+            })
+            @end
+        </div>
+          <div>
+            <button type="submit" class="w-full bg-white text-black font-semibold p-2 border hover:text-black hover:bg-gray-400 focus:outline-none focus:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Confirmar</button>
+          </div>
+            @flashMessage('errors.login')
+            <div class="bg-red-500 text-white p-4 rounded mb-4">
+                {{ $message }}
+            </div>
+            @end
+        </form>
+        <div class="mt-4 text-sm text-gray-400 text-center">
+          <p><a href="/" class="text-red-500 hover:underline">Cancelar</a></p>
+        </div>
+      </div>
+    </div>
+  </main>
+    <script>
+        document.getElementById('form').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        })
+    </script>
+</body>
 </html>
+
+

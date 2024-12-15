@@ -1,25 +1,37 @@
 @layouts.app() 
 <head>
-    <title>Lista de Produtos</title>
+    <style>
+        /* Adiciona o contorno no texto */
+        .text-outline {
+            -webkit-text-stroke: 2px #ffffff; /* Cor do contorno */
+            color: white; /* Faz o texto ser transparente */
+        }
+    </style>
 </head>
-<body>
-    <main class="p-8">
-        <h1 class="text-2xl font-bold mb-6">Lista de Produtos</h1>
+<body class="bg-gray-200">
+    <main class="p-0 max-w-6xl mx-auto pt-12 mb-16">
+        <h1 class="text-8xl text-white  font-extrabold mb-6 w-full text-center border-4 border-white text-outline bg-black">PRODUTOS</h1>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @each(product in products)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <img src="/path/to/product-image.jpg" alt="{{ product }}" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h2 class="text-lg font-semibold mb-2">
-                            <a href="{{ route('product_type') }}?type={{ product }}" class="text-blue-600 hover:text-blue-800">
-                                {{ product }}
-                            </a>
-                        </h2>
-                        <p class="text-gray-600">Descrição breve sobre o produto.</p>
-                    </div>
+            @each((product, index) in products)
+            <div class="bg-white  overflow-hidden flex flex-col items-center border border-gray-200 hover:border-gray-500"> <!-- Borda roxa clara -->
+                <img src="{{fotos[index]}}" alt="{{ product }}" class="w-full h-64 object-contain rounded-d mb-4 transform transition-transform duration-300 hover:scale-105"> <!-- Imagem mais alta -->
+                <div class="p-1 text-black hover:text-white mt-4 sm:mt-0 bg-transparent border-2 border-black hover:bg-black text-black text-center font-bold flex-grow flex flex-col justify-center w-full uppercase"> <!-- Fundo preto, alinhamento vertical -->
+                    <h2 class="text-2xl mb-2 w-full text-center">
+                        <a href="{{ route('product_type') }}?type={{ product }}" class=" hover:text-white ">
+                            {{ product }}
+                        </a>
+                    </h2>
                 </div>
+            </div>
             @end
         </div>
-    </main>
+    </main>  
+    <footer class="bg-black text-white py-6 ">
+        <div class="max-w-7xl mx-auto text-center">
+            <p>&copy; 2024 E-Shop. All rights reserved.</p>
+        </div>
+      </footer>  
 </body>
+
+
 @end

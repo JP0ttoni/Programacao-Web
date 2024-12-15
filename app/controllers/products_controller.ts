@@ -18,10 +18,18 @@ export default class ProductsController {
             await auth.authenticate()
         }
 
+        const fotos = ['https://www.gsuplementos.com.br/upload/produto/imagem/creatina-250g-creapure-growth-supplements-1.webp', 'http://http2.mlstatic.com/D_847810-MLU72760574572_112023-O.jpg'
+            , 'https://www.gsuplementos.com.br/upload/produto/imagem/hot-termog-nico-60-comprimidos-growth-supplements.webp', 'https://product-data.raiadrogasil.io/images/3446808.webp'
+            , 'https://lojamaxtitanium.vtexassets.com/arquivos/ids/157542/mass-titanium-zero-lactose-max-titanium-2.4kg-morango-1.jpg?v=638348708952130000'
+            , 'https://www.gsuplementos.com.br/upload/produto/imagem/vitamina-c-120-caps-growth-supplements-1.webp', 'https://lojamaxtitanium.vtexassets.com/arquivos/ids/157369/beta-alanina-max-titanium-150g-1.jpg?v=638343764574630000'
+            , 'https://www.gsuplementos.com.br/upload/produto/imagem/albumina-500g-growth-supplements.webp', 'https://drogariasp.vteximg.com.br/arquivos/ids/626642-1000-1000/689645---glutamina-natural-integral-medica-150g.jpg?v=637866877301370000'
+            , 'https://www.gsuplementos.com.br/upload/produto/imagem/cafe-na-200mg-60-caps-growth-supplements-termog-nico.webp', 'https://integralmedica.vtexassets.com/arquivos/ids/165306/ARGININE.png?v=638203651597000000',
+            'https://www.gsuplementos.com.br/upload/produto/imagem/bcaa-5-1-1-200g-em-p-growth-supplements-3.webp']
+
 
         //await auth.use('web').logout()
 
-        return view.render('pages/products/index', {products: products_type})
+        return view.render('pages/products/index', {products: products_type, fotos})
 
     }
 
@@ -66,9 +74,36 @@ export default class ProductsController {
             query.where('type', 'like', `%${payload.type}`)
         }
 
+        const avals = await Aval.all()
+        let qntd_avals = []
+
+        let photos = await ProductImage.all()
+        photos = photos.reverse()
+
+        let fotos = []
+
+        for(let i in photos)
+        {
+            if(fotos[photos[i].productId] == undefined)
+            {
+                fotos[photos[i].productId] = photos[i].imagePath
+            }
+        }
+        console.log(fotos)
+
+        for(let i in avals)
+        {
+            if(qntd_avals[avals[i].product_id] == undefined)
+            {
+                qntd_avals[avals[i].product_id] = 0
+            }
+            qntd_avals[avals[i].product_id]++
+            console.log(qntd_avals[avals[i].product_id])
+        }
+
         const products = await query.paginate(paginate, limit)
 
-        return view.render('pages/products/type', { products: products.rows })//adicionar ids//products.rows: Essa propriedade contém apenas os dados reais da consulta, sem os metadados de paginação.
+        return view.render('pages/products/type', { products: products.rows, avals: qntd_avals, photos: fotos })//adicionar ids//products.rows: Essa propriedade contém apenas os dados reais da consulta, sem os metadados de paginação.
     }
 
     async show({ params, view, auth }: HttpContext) {
@@ -153,6 +188,21 @@ export default class ProductsController {
         return response.redirect('back')
     }
 
+    async aval_delete({ response, params}: HttpContext)
+    {
+        try {
+            // Encontrar o produto pelo ID
+            const aval = await Aval.findOrFail(params.id)
+            console.log(aval)
+            await aval.delete()
+            
+            return response.redirect().back()
+        } catch (error) {
+            // Caso não encontre o produto, retorna um erro
+            return { error: `Produto com ID ${params.id} não encontrado.` }
+        }
+    }
+
     async store({ request, view, response, auth, session }: HttpContext) {
         console.log("entrou pra verificar o produto")
         if(await auth.check())
@@ -183,18 +233,30 @@ export default class ProductsController {
         }
 
 
-        return response.redirect('/')
+        return response.redirect('/products/create')
     }
 
-    async destroy({ params }: HttpContext) {
-        const product = await Product.findOrFail(params.id)
-
-        await product.delete()
+    async destroy({ params, response }: HttpContext) {
+        try {
+            // Encontrar o produto pelo ID
+            const product = await Product.findOrFail(params.id)
+            console.log(product)
+            await product.delete()
+            
+            return response.redirect('/products')
+        } catch (error) {
+            // Caso não encontre o produto, retorna um erro
+            return { error: `Produto com ID ${params.id} não encontrado.` }
+        }
+        
 
         return { sucess: `${params.id} removido` }
     }
 
     async patch({ params, request, response }: HttpContext) {
+
+        console.log(request.all())
+        const operation = request.only(['operation']).operation
         // Extrair os dados do payload
         const payload = request.only(['product_id', 'qntd']);
     
@@ -211,9 +273,19 @@ export default class ProductsController {
         if (isNaN(pay_qntd)) {
             return response.status(400).send({ error: 'Invalid quantity provided' });
         }
-    
+        
+        let new_qntd
         // Atualizar a quantidade do produto
-        const new_qntd = product.qntd + pay_qntd;
+        if(operation == 'remove')
+        {
+            new_qntd = product.qntd - pay_qntd;
+        }else{
+            new_qntd = product.qntd + pay_qntd;
+        }
+        if(new_qntd < 0)
+        {
+            new_qntd = 0;
+        }
         product.merge({ qntd: new_qntd });
     
         // Salvar as alterações no banco de dados

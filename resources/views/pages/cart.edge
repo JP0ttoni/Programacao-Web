@@ -1,0 +1,125 @@
+@!component('components/layouts/app.edge')
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho de Compras</title>
+  <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+  <script>
+
+    window.onload = function(){
+        var total = 0;
+      var subtotals = document.querySelectorAll('.subtotal');
+      subtotals.forEach(function(subtotalElement) {
+        total += parseFloat(subtotalElement.innerText.replace('R$ ', ''));
+      });
+      document.getElementById('total').innerText = 'R$ ' + total.toFixed(2);
+    }
+
+    function updateQuantity(itemId) {
+      var quantity = document.getElementById('quantity-' + itemId).value;
+      var price = parseFloat(document.getElementById('price-' + itemId).dataset.price);
+      var subtotal = price * quantity;
+        document.getElementById('subtotal-' + itemId).innerText = 'R$ ' + subtotal.toFixed(2);
+        updateTotal();
+    }
+
+    function updateTotal() {
+      var total = 0;
+      var subtotals = document.querySelectorAll('.subtotal');
+      subtotals.forEach(function(subtotalElement) {
+        total += parseFloat(subtotalElement.innerText.replace('R$ ', ''));
+      });
+      document.getElementById('total').innerText = 'R$ ' + total.toFixed(2);
+    }
+
+    function removeItem(itemId) {
+      document.getElementById('item-' + itemId).remove();
+      updateTotal();
+    }
+  </script>
+</head>
+<body >
+
+  <!-- Carrinho -->
+  <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+    <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">Carrinho de compras</h2>
+  
+      <div class="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+        <div class="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-4xl">
+          <div class="space-y-6">
+
+            @each(item in user_cart)
+            <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+                <div class="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
+                  <a href="{{ route('product_match', { id: item.$extras.Product_id }) }}" class="shrink-0 md:order-1">
+                    <img class="h-20 w-20 dark:hidden" src="{{ item.image }}" alt="imac image" />
+                  </a>
+  
+                <label for="counter-input" class="sr-only">Choose quantity:</label>
+                <div class="flex items-center justify-between md:order-3 md:justify-end">
+                  <div class="flex items-center">
+                    <form action="{{route('cart_patch', {id: item.id})}}" method="post">
+                        <input 
+                          type="number" 
+                          name="qntd"
+                          id="quantity-{{ item.id }}" 
+                          value="{{ item.qntd }}" 
+                          min="1" 
+                          class="w-20 p-1 border rounded"
+                          onchange="updateQuantity({{ item.id }})"
+                        />
+                    </form>
+                  </div>
+                    <p class="text-base font-bold text-gray-900 dark:text-white" id="price-{{ item.id }}" data-price="{{ item.price }}"></p>
+                  <div class="text-end md:order-4 md:w-32">
+                    <p class="text-base font-bold text-gray-900 dark:text-white subtotal" id="subtotal-{{ item.id }}" >R$ {{ (item.price * item.qntd).toFixed(2) }}</p>
+                  </div>
+                </div>
+  
+                <div class="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
+                  <a href="{{ route('product_match', { id: item.$extras.Product_id }) }}" class="text-base font-medium text-gray-900 hover:underline dark:text-white">{{ item.name }}</a>
+  
+                  <div class="flex items-center gap-4">
+                    <form action="{{ route('cart_delete', {id: item.id}) }}">
+                        <button type="submit" class="inline-flex items-center text-sm font-medium text-red-600 hover:underline dark:text-red-500">
+                          <svg class="me-1.5 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" />
+                          </svg>
+                          Remove
+                        </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+        @end
+            
+
+
+
+
+          </div>
+        </div>
+  
+        <div class="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
+          <div class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
+            <p class="text-xl font-semibold text-gray-900 dark:text-white">Pedido</p>
+  
+            <div class="space-y-4">
+  
+              <dl class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
+                <dt class="text-base font-bold text-gray-900 dark:text-white" >Total</dt>
+                <dd class="text-base font-bold text-gray-900 dark:text-white" id="total">R$ {{ total }}</dd>
+              </dl>
+            </div>
+  
+            <a href="cart/checkout" class="flex w-full items-center justify-center border-2 border-black bg-transparent px-5 py-2.5 text-sm font-medium text-black hover:text-white hover:bg-black focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Finalizar Compra</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</html>

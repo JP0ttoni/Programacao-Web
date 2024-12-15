@@ -1,0 +1,121 @@
+@!component('components/layouts/app.edge')
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho de Compras</title>
+  <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+  <script>
+
+    window.onload = function(){
+        var total = 0;
+      var subtotals = document.querySelectorAll('.subtotal');
+      subtotals.forEach(function(subtotalElement) {
+        total += parseFloat(subtotalElement.innerText.replace('R$ ', ''));
+      });
+      document.getElementById('total').innerText = 'R$ ' + total.toFixed(2);
+    }
+
+    function updateQuantity(itemId) {
+      var quantity = document.getElementById('quantity-' + itemId).value;
+      var price = parseFloat(document.getElementById('price-' + itemId).dataset.price);
+      var subtotal = price * quantity;
+        document.getElementById('subtotal-' + itemId).innerText = 'R$ ' + subtotal.toFixed(2);
+        updateTotal();
+    }
+
+    function updateTotal() {
+      var total = 0;
+      var subtotals = document.querySelectorAll('.subtotal');
+      subtotals.forEach(function(subtotalElement) {
+        total += parseFloat(subtotalElement.innerText.replace('R$ ', ''));
+      });
+      document.getElementById('total').innerText = 'R$ ' + total.toFixed(2);
+    }
+
+    function removeItem(itemId) {
+      document.getElementById('item-' + itemId).remove();
+      updateTotal();
+    }
+
+    function incrementar(itemId) {
+        console.log('ola');
+        const inputElement = document.getElementById("change-" + itemId);
+        let valor = parseInt(inputElement.value); // Converte o valor para número inteiro
+        inputElement.value = ++valor; // Incrementa o valor e atualiza o input
+    }
+
+    function decrementar(itemId) {
+        console.log('ola');
+        const inputElement = document.getElementById("change-" + itemId);
+        let valor = parseInt(inputElement.value); // Converte o valor para número inteiro
+        if((valor - 1) >= 1){
+            inputElement.value = --valor; // Incrementa o valor e atualiza o input
+        }
+    }
+
+  </script>
+</head>
+
+
+
+<body class="bg-gray-100 font-sans">
+
+  <!-- Carrinho -->
+  <div class="container mx-auto p-6">
+
+    <div class="bg-white p-6 shadow-lg">
+      <!-- Listagem dos produtos -->
+      <table class="min-w-full table-auto">
+        <thead>
+          <tr class="">
+            <th class=" px-4 py-2 text-left">Produto</th>
+            <th class=" px-4 py-2 text-left">Nome do produto</th>
+            <th class=" px-4 py-2 text-left">Preço</th>
+            <th class=" px-4 py-2 text-left">Quantidade</th>
+            <th class=" px-4 py-2 text-left">Subtotal</th>
+            <th class=" px-4 py-2 text-left"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(item in user_cart)
+
+            <tr id="item-{{ item.id }}">
+                <td class="w-20 h-20"><img src="{{ item.image }}" alt="image"></td>
+              <td class="px-4 py-2"><a href="{{ route('product_match', { id: item.$extras.Product_id }) }}">{{ item.name }}</a></td>
+              <td class="px-4 py-2" id="price-{{ item.id }}" data-price="{{ item.price }}">R$ {{ item.price }}</td>
+              <td class="px-4 py-2">
+                <form action="{{route('cart_patch', {id: item.id})}}" method="post">
+                    <input 
+                      type="number" 
+                      name="qntd"
+                      id="quantity-{{ item.id }}" 
+                      value="{{ item.qntd }}" 
+                      min="1" 
+                      class="w-20 p-1 border rounded"
+                      onchange="updateQuantity({{ item.id }})"
+                    />
+                </form>
+              </td>
+              <td class="px-4 py-2 subtotal" id="subtotal-{{ item.id }}">R$ {{ (item.price * item.qntd).toFixed(2) }}</td>
+              <td class="px-4 py-2">
+                <form action="{{ route('cart_delete', {id: item.id}) }}">
+                    <button type="submit" class="text-red-500 hover:text-red-700">Remover</button>
+                </form>
+              </td>
+            </tr>
+          @end
+        </tbody>
+      </table>
+
+      <!-- Total -->
+      <div class="mt-4 flex justify-between items-center">
+        <h3 class="text-xl font-semibold">Total: <span id="total">R$ {{ total }}</span></h3>
+        <a href="cart/checkout" class="bg-transparent hover:bg-black border-2 border-black text-black hover:text-white font-bold py-2 px-4 ">Finalizar Compra</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

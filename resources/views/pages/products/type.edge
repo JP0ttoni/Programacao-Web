@@ -5,10 +5,10 @@
     <title>Lista de Produtos e Vídeos</title>  
     <link rel="stylesheet" href="/path/to/tailwind.css"> <!-- Link para seu CSS do Tailwind -->
 </head>
-<body>
-    <main class="p-8">
-        <h1 class="text-2xl font-bold mb-6">Vídeos</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+<body class="bg-gray-200">
+    <main class="p-8 mb-16">
+        <h1 class="text-white text-2xl font-bold mb-6">Vídeos</h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-8">
             @each(id in ids)
                 <div class="shadow-md rounded-lg overflow-hidden">
                     <iframe class="w-full h-64" src="https://www.youtube.com/embed/{{ id }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -16,20 +16,76 @@
             @end
         </div>
         
-        <h1 class="text-2xl font-bold mb-4">Lista de Produtos</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h1 class="text-white text-2xl font-bold mb-4">Lista de Produtos</h1>
+        <div class="flex justify-end">
+        <div class="w-3/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             @each(product in products)
             @if(product.qntd > 0 || (await auth.check() && product.qntd <= 0 && auth.user.username == 'admin'))
-                <div class="bg-white p-4 shadow rounded-lg">
-                    <img src="{{ product.image_url }}" alt="{{ product.name }} - Imagem" class="w-full h-48 object-cover rounded-md mb-4">
-                    <a href="{{ route('product_match', { id: product.id }) }}" class="text-blue-600 hover:text-blue-800 font-semibold">
+            <div class="bg-white rounded p-4 border border-gray-300 hover:border-gray-500">
+                <img src="{{ photos[product.id] }}" alt="{{ product.name }} - Imagem" class="w-full h-48 object-contain rounded-md mb-4 transform transition-transform duration-300 hover:scale-105">
+                <div>
+                    <a href="{{ route('product_match', { id: product.id }) }}" class=" font-semibold text-gray-700 hover:text-black dark:text-white">
                         {{ product.name }}
                     </a>
+                </div>
+                <div class="flex items-center gap-0 5 mt-5 sm:mt-3">
+                        <div class="flex items-center gap-1">
+                           @each(index in [1,2,3,4,5])
+                                     @if(index <= product.rate)
+                                       <svg
+                                         class="w-4 h-4 text-yellow-300"
+                                         aria-hidden="true"
+                                         xmlns="http://www.w3.org/2000/svg"
+                                         width="24"
+                                         height="24"
+                                         fill="currentColor"
+                                         viewBox="0 0 24 24"
+                                       >
+                                         <path
+                                           d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
+                                         />
+                                       </svg>
+                                       @else
+                                       <svg
+                                       class="w-4 h-4 text-gray-300"
+                                       aria-hidden="true"
+                                       xmlns="http://www.w3.org/2000/svg"
+                                       width="24"
+                                       height="24"
+                                       fill="currentColor"
+                                       viewBox="0 0 24 24"
+                                     >
+                                       <path
+                                         d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"
+                                       />
+                                     </svg>
+                                       @end
+                                   @end
+                                   <p>
+                                    @if(avals[product.id] == undefined) 
+                                      (0)
+                                      @else
+                                      ({{ avals[product.id] }})   
+                                    @end
+                                </p>
+                       </div>
+                    </div>
+                    <div class="flex items-center gap-0 5 mt-5 sm:mt-3">
+                        <p class="text-2xl font-extrabold text-green-600 sm:text-3xl "><strong></strong> R$ {{ product.price }}</p>
+                    </div>
                 </div>
                 @endif
             @end
         </div>
+      </div>
     </main>
+      <footer class="bg-black text-white py-6 ">
+        <div class="max-w-7xl mx-auto text-center">
+            <p>&copy; 2024 E-Shop. All rights reserved.</p>
+        </div>
+      </footer>
 </body>
+
+
 </html>
 @end
