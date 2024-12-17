@@ -1,121 +1,87 @@
-@!component('components/layouts/app.edge')
+@layouts.app()
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carrinho de Compras</title>
-  <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-  <script>
-
-    window.onload = function(){
-        var total = 0;
-      var subtotals = document.querySelectorAll('.subtotal');
-      subtotals.forEach(function(subtotalElement) {
-        total += parseFloat(subtotalElement.innerText.replace('R$ ', ''));
-      });
-      document.getElementById('total').innerText = 'R$ ' + total.toFixed(2);
-    }
-
-    function updateQuantity(itemId) {
-      var quantity = document.getElementById('quantity-' + itemId).value;
-      var price = parseFloat(document.getElementById('price-' + itemId).dataset.price);
-      var subtotal = price * quantity;
-        document.getElementById('subtotal-' + itemId).innerText = 'R$ ' + subtotal.toFixed(2);
-        updateTotal();
-    }
-
-    function updateTotal() {
-      var total = 0;
-      var subtotals = document.querySelectorAll('.subtotal');
-      subtotals.forEach(function(subtotalElement) {
-        total += parseFloat(subtotalElement.innerText.replace('R$ ', ''));
-      });
-      document.getElementById('total').innerText = 'R$ ' + total.toFixed(2);
-    }
-
-    function removeItem(itemId) {
-      document.getElementById('item-' + itemId).remove();
-      updateTotal();
-    }
-
-    function incrementar(itemId) {
-        console.log('ola');
-        const inputElement = document.getElementById("change-" + itemId);
-        let valor = parseInt(inputElement.value); // Converte o valor para número inteiro
-        inputElement.value = ++valor; // Incrementa o valor e atualiza o input
-    }
-
-    function decrementar(itemId) {
-        console.log('ola');
-        const inputElement = document.getElementById("change-" + itemId);
-        let valor = parseInt(inputElement.value); // Converte o valor para número inteiro
-        if((valor - 1) >= 1){
-            inputElement.value = --valor; // Incrementa o valor e atualiza o input
-        }
-    }
-
-  </script>
+    <title>Lista de Produtos e Vídeos</title>
+    <link rel="stylesheet" href="/path/to/tailwind.css"> <!-- Link para seu CSS do Tailwind -->
 </head>
+<body class="bg-gray-200">
+    <main class="p-8 mb-16">
+        <!-- Filtro de Preço -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Filtrar por Preço</h2>
+            <div class="flex flex-wrap items-center gap-4">
+                <label for="price-min" class="text-gray-700">Preço Mínimo:</label>
+                <input id="price-min" type="number" min="0" placeholder="0" class="p-2 border rounded w-32">
+                
+                <label for="price-max" class="text-gray-700">Preço Máximo:</label>
+                <input id="price-max" type="number" placeholder="1000" class="p-2 border rounded w-32">
+                
+                <input type="range" id="price-slider" min="0" max="1000" value="500" class="w-full md:w-1/2">
+            </div>
+        </div>
 
+        <!-- Lista de Produtos -->
+        <h1 class="text-white text-2xl font-bold mb-4">Lista de Produtos</h1>
+        <div class="w-3/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="product-list">
+            @each(product in products)
+            @if(product.qntd > 0 || (await auth.check() && product.qntd <= 0 && auth.user.username == 'admin'))
+            <div class="product bg-white rounded p-4 border border-gray-300 hover:border-gray-500" data-price="{{ product.price }}">
+                <img src="{{ photos[product.id] }}" alt="{{ product.name }} - Imagem" class="w-full h-48 object-contain rounded-md mb-4 transform transition-transform duration-300 hover:scale-105">
+                <div>
+                    <a href="{{ route('product_match', { id: product.id }) }}" class="font-semibold text-gray-700 hover:text-black dark:text-white">
+                        {{ product.name }}
+                    </a>
+                </div>
+                <div class="flex items-center gap-1 mt-3">
+                    <p class="text-2xl font-extrabold text-green-600 sm:text-3xl">R$ {{ product.price }}</p>
+                </div>
+            </div>
+            @endif
+            @end
+        </div>
+    </main>
 
+    <footer class="bg-black text-white py-6">
+        <div class="max-w-7xl mx-auto text-center">
+            <p>&copy; 2024 E-Shop. All rights reserved.</p>
+        </div>
+    </footer>
 
-<body class="bg-gray-100 font-sans">
+    <!-- Script para Filtro de Preço -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const minInput = document.getElementById('price-min');
+            const maxInput = document.getElementById('price-max');
+            const slider = document.getElementById('price-slider');
+            const products = document.querySelectorAll('.product');
+            const productList = document.getElementById('product-list');
 
-  <!-- Carrinho -->
-  <div class="container mx-auto p-6">
+            // Função para atualizar os produtos exibidos
+            function filterProducts() {
+                const minPrice = parseFloat(minInput.value) || 0;
+                const maxPrice = parseFloat(maxInput.value) || Infinity;
 
-    <div class="bg-white p-6 shadow-lg">
-      <!-- Listagem dos produtos -->
-      <table class="min-w-full table-auto">
-        <thead>
-          <tr class="">
-            <th class=" px-4 py-2 text-left">Produto</th>
-            <th class=" px-4 py-2 text-left">Nome do produto</th>
-            <th class=" px-4 py-2 text-left">Preço</th>
-            <th class=" px-4 py-2 text-left">Quantidade</th>
-            <th class=" px-4 py-2 text-left">Subtotal</th>
-            <th class=" px-4 py-2 text-left"></th>
-          </tr>
-        </thead>
-        <tbody>
-          @each(item in user_cart)
+                products.forEach(product => {
+                    const price = parseFloat(product.getAttribute('data-price'));
+                    if (price >= minPrice && price <= maxPrice) {
+                        product.style.display = 'block';
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+            }
 
-            <tr id="item-{{ item.id }}">
-                <td class="w-20 h-20"><img src="{{ item.image }}" alt="image"></td>
-              <td class="px-4 py-2"><a href="{{ route('product_match', { id: item.$extras.Product_id }) }}">{{ item.name }}</a></td>
-              <td class="px-4 py-2" id="price-{{ item.id }}" data-price="{{ item.price }}">R$ {{ item.price }}</td>
-              <td class="px-4 py-2">
-                <form action="{{route('cart_patch', {id: item.id})}}" method="post">
-                    <input 
-                      type="number" 
-                      name="qntd"
-                      id="quantity-{{ item.id }}" 
-                      value="{{ item.qntd }}" 
-                      min="1" 
-                      class="w-20 p-1 border rounded"
-                      onchange="updateQuantity({{ item.id }})"
-                    />
-                </form>
-              </td>
-              <td class="px-4 py-2 subtotal" id="subtotal-{{ item.id }}">R$ {{ (item.price * item.qntd).toFixed(2) }}</td>
-              <td class="px-4 py-2">
-                <form action="{{ route('cart_delete', {id: item.id}) }}">
-                    <button type="submit" class="text-red-500 hover:text-red-700">Remover</button>
-                </form>
-              </td>
-            </tr>
-          @end
-        </tbody>
-      </table>
+            // Sincronizar slider com inputs
+            slider.addEventListener('input', () => {
+                maxInput.value = slider.value;
+                filterProducts();
+            });
 
-      <!-- Total -->
-      <div class="mt-4 flex justify-between items-center">
-        <h3 class="text-xl font-semibold">Total: <span id="total">R$ {{ total }}</span></h3>
-        <a href="cart/checkout" class="bg-transparent hover:bg-black border-2 border-black text-black hover:text-white font-bold py-2 px-4 ">Finalizar Compra</a>
-      </div>
-    </div>
-  </div>
-
+            minInput.addEventListener('input', filterProducts);
+            maxInput.addEventListener('input', filterProducts);
+        });
+    </script>
 </body>
 </html>
+@end
