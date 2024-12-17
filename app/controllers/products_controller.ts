@@ -33,12 +33,13 @@ export default class ProductsController {
 
     }
 
-    async type_product({ request, view, auth }: HttpContext)
+    async type_product({ request, view, auth, session }: HttpContext)
     {
         if(await auth.check()){
             await auth.authenticate()
         }
 
+        const search = request.only(['search'])
         const payload = request.only(['type'])
         console.log(payload)
         /*const url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${payload.type}&type=video&videoDuration=medium&regionCode=BR&relevanceLanguage=pt&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
@@ -66,14 +67,20 @@ export default class ProductsController {
         console.log(ids)*/
 
         const paginate = request.input('page', 1)//se n receber page, seta o default como 1
-        const limit = 9
+        const limit = 8
 
         const query = Product.query()
         if(payload.type && payload.type.length > 0)
         {
-            query.where('type', 'like', `%${payload.type}`)
+                query.where('type', 'LIKE', `%${payload.type}%`)
+                
         }
-
+            
+            if(!payload.type){
+                query.where('type', 'LIKE', `%${search.search}%`)
+                .orWhere('name', 'LIKE', `%${search.search}%`) // Busca parcial no nome
+                .orWhere('description', 'LIKE', `%${search.search}%`)
+            }
         const avals = await Aval.all()
         let qntd_avals = []
 
@@ -102,8 +109,9 @@ export default class ProductsController {
         }
 
         const products = await query.paginate(paginate, limit)
-
-        return view.render('pages/products/type', { products: products.rows, avals: qntd_avals, photos: fotos })//adicionar ids//products.rows: Essa propriedade contém apenas os dados reais da consulta, sem os metadados de paginação.
+            
+            return view.render('pages/products/type', { products: products.rows, avals: qntd_avals, photos: fotos })
+        //adicionar ids//products.rows: Essa propriedade contém apenas os dados reais da consulta, sem os metadados de paginação.
     }
 
     async show({ params, view, auth }: HttpContext) {
