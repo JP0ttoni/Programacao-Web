@@ -13,8 +13,8 @@
             <div class="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
                 <!-- Imagens principais do produto -->
                 <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
-                    <!-- Imagens do produto -->
-                    @each(image in product_images)
+                  <!-- Imagens do produto -->
+                  @each(image in product_images)
                     <div class="product-slide w-full sm:h-400px] md:h-[400px] lg:h-[500px] flex-shrink-0 flex items-center justify-center relative">
                         <img src="{{ image }}" alt="{{ product.name }} - Imagem" class=" h-full w-full">
                         <button class="absolute top-1/2 left-[-2rem] transform -translate-y-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded-full" onclick="moveSlide(-1)">
@@ -144,8 +144,18 @@
                 @endif
               </div>
               @flashMessage('errors.cart')
-            <div class=" font-semibold text-red-500 p-3 mb-4">
-                {{ $message }}
+              <div class=" rounded font-semibold text-red-500 p-3 mb-4">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                  <div><strong class="font-bold">{{ $message }}</strong></div>
+              </div>
+              </div>
+            @end
+            @flashMessage('sucess.cart')
+            <div class=" rounded font-semibold text-green-500 p-3 mb-4">
+              <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <div><strong class="font-bold">Produto adicionado no carrinho!</strong></div>
+                <div class="block sm:inline">O seu produto foi adicionado com sucesso, para compra-lo acesse o carrinho.</div>
+            </div>
             </div>
             @end
 

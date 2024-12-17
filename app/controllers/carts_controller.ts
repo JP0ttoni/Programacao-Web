@@ -1,8 +1,9 @@
-import type { HttpContext } from '@adonisjs/core/http'
+import { Route, type HttpContext } from '@adonisjs/core/http'
 import User from '#models/user';
 import Cart from '#models/cart';
 import auth from '@adonisjs/auth/services/main';
 import { createCartValidator } from '#validators/cart';
+import Product from '#models/product';
 
 export default class CartsController {
 
@@ -29,7 +30,8 @@ export default class CartsController {
         //const cart = await createCartValidator.validate(request.all())
         //const cart_product = Cart.create(cart)
 
-        return response.redirect('/cart')
+        session.flash({ sucess: { cart: 'Produto adicionado no carrinho!' } })
+        return response.redirect().back()
     }
 
     async destroy({params, response}:HttpContext){
@@ -66,8 +68,35 @@ export default class CartsController {
         }
     }
 
-    async pay()
+    async pay({ auth, session, request, response, params, view }:HttpContext)
     {
+        if(await auth.check())
+            {
+                auth.authenticate()
+            }
+            
+            const cart = await Cart.query().where('User_id', 'like', `${auth.user?.id}`)
+            console.log(cart)
+            if(cart.length == 0){
+                session.flash({ errors: { stock: `Carrinho vazio` } })
+                return response.redirect().back()
+            }
+            for(const item of cart){
+                console.log(`user_id: ${item.$extras.Product_id}`)
+                const product = await Product.findOrFail(item.$extras.Product_id)
+            if(item.qntd > product.qntd)
+            {
+                session.flash({ errors: { stock: `quantidade do produto "${item.name}" execede a quantidade presente no estoque` } })
+                return response.redirect().back()
+            }else{
+                const new_qntd = product.qntd - item.qntd
+                product.merge({ qntd: new_qntd })
+                await product.save()
+                await item.delete()
 
+            }
+        }
+        return view.render('pages/checkout')
+        
     }
 }
