@@ -9,15 +9,15 @@
   <main class="flex h-screen">
 
     <!-- Lado esquerdo - Imagem -->
-    <div class="hidden lg:flex items-center justify-center flex-1 bg-black text-black">
+    <div class="hidden lg:flex items-center justify-center flex-1 bg-zinc-700 text-black">
       <div class="w-full h-full">
         <img src="{{ asset('resources/views/images/WB_gorilla-removebg-preview.png') }}" alt="" class="w-full h-full object-cover">
       </div>
     </div>
   
     <!-- Lado direito - Formulário de login -->
-    <div class="w-full lg:w-1/2 bg-black flex items-center justify-center">
-      <div class="max-w-md w-full p-6">
+    <div class="w-full lg:w-1/2 bg-zinc-700 flex items-center justify-center">
+      <div class="max-w-md w-full p-6 border rounded-xl">
         <h1 class="text-3xl font-semibold mb-6 text-white text-center">Criar Usuário</h1>
         <div class="mt-4 flex flex-col lg:flex-row items-center justify-between">
           <div class="w-full lg:w-1/2 mb-2 lg:mb-0">
@@ -34,20 +34,20 @@
             @input({
                 type: "text",
                 name: "fullName", 
-                class: "mt-1 p-2 w-full text-white border bg-transparent  focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+                class: "mt-1 p-2 w-full text-white border   focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
             })
             @end
         </div>
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-100">Senha</label>
-            <input type="password" id="password" name="password" class="mt-1 p-2 w-full text-white border bg-transparent  focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
+            <label for="password" class="block text-sm font-medium text-gray-100">Senha:</label>
+            <input type="password" id="password" name="password" class="mt-1 p-2 w-full text-white border   focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300">
           </div>
           <div class="mb-4">
             <label for="username" class="block text-sm font-medium text-gray-100">Nome de Usuário:</label>
             @input({
                 type: "text",
                 name: "username", 
-                class: "mt-1 p-2 w-full text-white border bg-transparent  focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+                class: "mt-1 p-2 w-full text-white border  focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
             })
             @end
         </div>
@@ -56,12 +56,12 @@
             @input({
                 type: "email",
                 name: "email", 
-                class: "mt-1 p-2 w-full text-white border bg-transparent  focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+                class: "mt-1 p-2 w-full text-white border  focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
             })
             @end
         </div>
           <div>
-            <button type="submit" class="w-full bg-white text-black font-semibold p-2 border hover:text-black hover:bg-gray-400 focus:outline-none focus:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Confirmar</button>
+            <button type="submit" class="w-full bg-transparent text-white font-semibold p-2 border hover:text-black hover:bg-gray-400 focus:outline-none focus:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300">Confirmar</button>
           </div>
             @flashMessage('errors.login')
             <div class="bg-red-500 text-white p-4 rounded mb-4">

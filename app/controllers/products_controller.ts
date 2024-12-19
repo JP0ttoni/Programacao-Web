@@ -39,48 +39,67 @@ export default class ProductsController {
             await auth.authenticate()
         }
 
+        const objective = request.only(['objective'])
         const search = request.only(['search'])
         const payload = request.only(['type'])
         console.log(payload)
-        /*const url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${payload.type}&type=video&videoDuration=medium&regionCode=BR&relevanceLanguage=pt&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
-        const data = await url.json()
-        const videoIds = data.items.map(item => item.id.videoId).filter(videoID => videoID !== undefined && videoID !== null);
-        let ids = []
-        const channelID = data.items
         
-        for(const canal of channelID)//fazendo a verificação se o canais retornados tem mais de 500mil inscritos e retornando os videos em q o canal tenha mais de 500mil inscritos
-        {
-            //console.log(canal)//UCthbIFAxbXTTQEC7EcQvP1Q   ${canal.snippet.channelId}
-            let channel = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${canal.snippet.channelId}&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
-            let jsonchannel = await channel.json()
-            let verify = jsonchannel.items.map(item => item.statistics.subscriberCount)
-            verify = parseInt(verify, 10)
-            //console.log(verify)
-            if(verify >= 500000)
-            {
-                ids.push(canal.id.videoId)
-            }
-        }
-
-        ids = ids.slice(0,3)
-
-        console.log(ids)*/
-
+        
         const paginate = request.input('page', 1)//se n receber page, seta o default como 1
         const limit = 8
-
+        
+        let ids = []
+        let show = false        
         const query = Product.query()
         if(payload.type && payload.type.length > 0)
-        {
+            {
                 query.where('type', 'LIKE', `%${payload.type}%`)
-                
-        }
+                show = true
+            }
             
-            if(!payload.type){
+            if(!payload.type && search.search){
                 query.where('type', 'LIKE', `%${search.search}%`)
                 .orWhere('name', 'LIKE', `%${search.search}%`) // Busca parcial no nome
-                .orWhere('description', 'LIKE', `%${search.search}%`)
+            }else if(!payload.type && !search.search && objective.objective)
+                {
+                    const objetivos = objective.objective.split('_')
+                    for(const item of objetivos)
+                    {
+                        query.orWhere('type', 'LIKE', `%${item}%`)
+                    }
+                    console.log(query)
+                }else if(payload.type){
+
+                let url
+                if(payload.type == 'pre treino')
+                {
+                    url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${payload.type}&type=video&videoDuration=medium&regionCode=BR&relevanceLanguage=pt&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
+                }else{
+                    url = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${payload.type}%20para%20quem%20treina&type=video&videoDuration=medium&regionCode=BR&relevanceLanguage=pt&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
+                }
+                const data = await url.json()
+                const videoIds = data.items.map(item => item.id.videoId).filter(videoID => videoID !== undefined && videoID !== null);
+                const channelID = data.items
+                
+                for(const canal of channelID)//fazendo a verificação se o canais retornados tem mais de 500mil inscritos e retornando os videos em q o canal tenha mais de 500mil inscritos
+                {
+                    //console.log(canal)//UCthbIFAxbXTTQEC7EcQvP1Q   ${canal.snippet.channelId}
+                    let channel = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${canal.snippet.channelId}&key=AIzaSyAm95waKs6qAPRH_j67t5j_FYs7QvYHZz4`)
+                    let jsonchannel = await channel.json()
+                    let verify = jsonchannel.items.map(item => item.statistics.subscriberCount)
+                    verify = parseInt(verify, 10)
+                    //console.log(verify)
+                    if(verify >= 500000)
+                    {
+                        ids.push(canal.id.videoId)
+                    }
+                }
+
+                ids = ids.slice(0,3)
+        
+                console.log(ids)
             }
+
         const avals = await Aval.all()
         let qntd_avals = []
 
@@ -110,7 +129,7 @@ export default class ProductsController {
 
         const products = await query.paginate(paginate, limit)
             
-            return view.render('pages/products/type', { products: products.rows, avals: qntd_avals, photos: fotos })
+            return view.render('pages/products/type', { show, products: products.rows, avals: qntd_avals, photos: fotos, ids })
         //adicionar ids//products.rows: Essa propriedade contém apenas os dados reais da consulta, sem os metadados de paginação.
     }
 
@@ -223,7 +242,11 @@ export default class ProductsController {
                 return response.redirect('/')
             }
         const images = await request.only(["images"])
-        const imagens = images.images.split(',')
+        let imagens = images.images.split(',')
+        if(imagens.length > 6)
+        {
+            imagens = imagens.slice(0,6)
+        }
         let payload = await createProductValidator.validate( request.all())
         payload.description = payload.description.replace(/&quot;/g, '')
         //request.only(['name', 'price', 'description', 'type'])

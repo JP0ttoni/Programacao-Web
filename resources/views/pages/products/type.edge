@@ -5,73 +5,143 @@
     <title>Lista de Produtos e Vídeos</title>  
     <link rel="stylesheet" href="/path/to/tailwind.css"> <!-- Link para seu CSS do Tailwind -->
     <script>
-      document.addEventListener('keydown', (event) => {
-        // Verifica se a tecla pressionada é o Enter
-        if (event.key === 'Enter') {
-            const minInput = document.getElementById('price-min');
-            const maxInput = document.getElementById('price-max');
-            const ratingInput = document.getElementById('rating-min');
-            const products = document.querySelectorAll('.product');
-            
-            // Função para filtrar os produtos com base nos preços e nas avaliações
-            function filterProducts() {
-                const minPrice = parseFloat(minInput.value) || 0;
-                const maxPrice = parseFloat(maxInput.value) || 400;
-                const minRating = parseFloat(ratingInput.value) || 0; // A nota mínima para o filtro de avaliação (default é 1)
-                
-                products.forEach(product => {
-                    const price = parseFloat(product.getAttribute('data-price'));
-                    const rating = parseFloat(product.getAttribute('data-rate')); // A nota do produto, armazenada no atributo 'data-rate'
-                    
-                    // Verifica se o produto atende aos critérios de preço e avaliação
-                    if (price >= minPrice && price <= maxPrice && rating >= minRating) {
-                        product.style.display = 'block'; // Exibe o produto
-                    } else {
-                        product.style.display = 'none'; // Esconde o produto
-                    }
-                });
-            }
-    
-            // Chama a função de filtragem apenas quando o Enter for pressionado
-            filterProducts();
+      function reset(){
+        const minInput = document.getElementById('price-min');
+        const maxInput = document.getElementById('price-max');
+        const ratingInputs = document.getElementsByName('rate'); // Lista de inputs do tipo radio
+        const products = document.querySelectorAll('.product');
+        minInput.value = null;
+        maxInput.value = null;
+        for (const radio of ratingInputs) {
+          if (radio.checked){
+            radio.checked = false;
+          }
         }
-    });
+
+        change()
+      }
+      function change() {
+        console.log("Olá!");
+        const minInput = document.getElementById('price-min');
+        const maxInput = document.getElementById('price-max');
+        const ratingInputs = document.getElementsByName('rate'); // Lista de inputs do tipo radio
+        const products = document.querySelectorAll('.product');
+
+        // Obtém o valor do rating selecionado
+        let minRating = 0; // Valor padrão caso nenhum esteja selecionado
+        for (const radio of ratingInputs) {
+            if (radio.checked) {
+                minRating = parseFloat(radio.value);
+                console.log(`A opção selecionada é: ${radio.value}`);
+                break;
+            }
+        }
+
+        // Função para filtrar os produtos com base nos preços e nas avaliações
+        function filterProducts() {
+            const minPrice = parseFloat(minInput.value) || 0; // Valor padrão: 0
+            const maxPrice = parseFloat(maxInput.value) || 400; // Valor padrão: 400
+            
+            products.forEach(product => {
+                const price = parseFloat(product.getAttribute('data-price'));
+                const rating = parseFloat(product.getAttribute('data-rate'));
+
+                // Verifica se o produto atende aos critérios de preço e avaliação
+                if (price >= minPrice && price <= maxPrice && rating >= minRating) {
+                    product.style.display = 'block'; // Exibe o produto
+                } else {
+                    product.style.display = 'none'; // Esconde o produto
+                }
+            });
+        }
+
+        // Chama a função de filtragem
+        filterProducts();
+    }
   </script>
 </head>
 <body class="bg-gray-200">
-    <main class="p-8 mb-16">
-        <h1 class="text-white text-2xl font-bold mb-6">Vídeos</h1>
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-8">
-            @each(id in ids)
-                <div class="shadow-md rounded-lg overflow-hidden">
-                    <iframe class="w-full h-64" src="https://www.youtube.com/embed/{{ id }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-            @end
-        </div>
-        <h1 class="text-white text-2xl font-bold mb-4">Lista de Produtos</h1>
-        <div class="flex">
+  <main class="p-8 mb-16">
+    
+    @if(show == true)   
+    <div class="bg-white rounded-lg">
+      <h1 class="text-black font-bold mb-6 text-center">
+        <span class="text-3xl">Está com dúvidas sobre {{products[0].type}}?!</span>
+        <span class="text-2xl block">Assista aos vídeos que selecionamos especialmente para esclarecer todas as suas perguntas!</span>
+      </h1>
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-5 mb-9">
+          @each(id in ids)
+              <div class="shadow-md rounded-lg overflow-hidden mb-3">
+                  <iframe class="w-full h-64" src="https://www.youtube.com/embed/{{ id }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+          @end
+      </div>
+    </div>
+      @end
+
+      <div class="text-6xl text-black font-extrabold w-full text-center border-4 border-white text-outline bg-white rounded-lg">Lista de Produtos</div>
+        <div class="w-full gap-4 flex pt-4">
           
-          <div class="w-1/4">
-            <h2 class="ml-14 pt-0 text-2xl  font-bold text-gray-700 mb-6">Filtrar por Preço</h2>
-            <div class="flex items-center gap-4">
+          <div class="ml-0 w-1/4 bg-white rounded-lg h-1/2 ">
+            <h2 class="pt-8 text-center rounded text-2xl font-bold text-black mb-6">Filtrar por Preço</h2>
+            <div class="w-full pt-2 flex justify-center items-center gap-6">
               <div >
-                <label for="price-min" class="text-gray-700 font-semibold">Preço Mínimo:</label>
                 <input id="price-min" type="number" min="0" placeholder="Min" class="p-2 border rounded w-32">
               </div>
                 
               <div>
-                <label for="price-max" class="text-gray-700 font-semibold">Preço Máximo:</label>
                 <input id="price-max" type="number" placeholder="Max" class="p-2 border rounded w-32">
               </div>
             </div>
+            <hr class="w-full my-6 borde-t border-white" />
 
-            <div class=" my-4">
-              <h2 class="ml-10 pt-0 text-2xl  font-bold text-gray-700 mb-6">Filtrar por Avaliação</h2>
-              <div class="ml-10">
-                <input id="rating-min" type="number" min="1" max=5 class="w-52 p-2 border border-gray-300 rounded-md" placeholder="Min">
+            <div class=" my-4 pt-2">
+              <h2 class="text-center rounded text-2xl font-bold text-black mb-6">Filtrar por Avaliação</h2>
+              <div class="flex flex-row-reverse justify-center items-center">
+                <input id="rating-min-5" type="radio" class="peer -ms-5 size-5 bg-transparent border-0 text-transparent cursor-pointer appearance-none checked:bg-none focus:bg-none focus:ring-0 focus:ring-offset-0" name="rate" value="5">
+                <label for="rating-min-5" class="peer-checked:text-yellow-400 text-gray-300 pointer-events-none dark:peer-checked:text-yellow-600 dark:text-neutral-600">
+                  <svg class="shrink-0 size-5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+                  </svg>
+                </label>
+                <input id="rating-min-4" type="radio" class="peer -ms-5 size-5 bg-transparent border-0 text-transparent cursor-pointer appearance-none checked:bg-none focus:bg-none focus:ring-0 focus:ring-offset-0" name="rate" value="4">
+                <label for="rating-min-5-4" class="peer-checked:text-yellow-400 text-gray-300 pointer-events-none dark:peer-checked:text-yellow-600 dark:text-neutral-600">
+                  <svg class="shrink-0 size-5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+                  </svg>
+                </label>
+                <input id="rating-min-3" type="radio" class="peer -ms-5 size-5 bg-transparent border-0 text-transparent cursor-pointer appearance-none checked:bg-none focus:bg-none focus:ring-0 focus:ring-offset-0" name="rate" value="3">
+                <label for="rating-min-5-3" class="peer-checked:text-yellow-400 text-gray-300 pointer-events-none dark:peer-checked:text-yellow-600 dark:text-neutral-600">
+                  <svg class="shrink-0 size-5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+                  </svg>
+                </label>
+                <input id="rating-min-2" type="radio" class="peer -ms-5 size-5 bg-transparent border-0 text-transparent cursor-pointer appearance-none checked:bg-none focus:bg-none focus:ring-0 focus:ring-offset-0" name="rate" value="2">
+                <label for="rating-min-2" class="peer-checked:text-yellow-400 text-gray-300 pointer-events-none dark:peer-checked:text-yellow-600 dark:text-neutral-600">
+                  <svg class="shrink-0 size-5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+                  </svg>
+                </label>
+                <input id="rating-min-1" type="radio" class="peer -ms-5 size-5 bg-transparent border-0 text-transparent cursor-pointer appearance-none checked:bg-none focus:bg-none focus:ring-0 focus:ring-offset-0" name="rate" value="1">
+                <label for="rating-min-1" class="peer-checked:text-yellow-400 text-gray-300 pointer-events-none dark:peer-checked:text-yellow-600 dark:text-neutral-600">
+                  <svg class="shrink-0 size-5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+                  </svg>
+                </label>
               </div>
-          </div>
+            </div>
+
+            <div class="mb-7 gap-4 flex justify-center items-center pt-9">
+              <div class="w-full max-w-[140px]">
+                <button class="w-full text-black-500 hover:text-white mt-4 sm:mt-0 bg-transparent border-2 border-black hover:bg-black text-black font-semibold py-2 px-4" onclick="change()">Aplicar filtros</button>
+              </div>
+              <div class="w-full max-w-[140px]">
+                <button class="w-full text-black-500 hover:text-white mt-4 sm:mt-0 bg-transparent border-2 border-black hover:bg-black text-black font-semibold py-2 px-4" onclick="reset()">Limpar filtros</button>
+              </div>
+            </div>
+
         </div>
+
           <div class="ml-auto w-3/4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               @each(product in products)
@@ -137,11 +207,6 @@
         </div>
         
     </main>
-      <footer class="bg-black text-white py-6 ">
-        <div class="max-w-7xl mx-auto text-center">
-            <p>&copy; 2024 E-Shop. All rights reserved.</p>
-        </div>
-      </footer>
 </body>
 </html>
 @end

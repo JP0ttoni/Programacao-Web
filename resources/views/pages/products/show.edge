@@ -14,7 +14,8 @@
                 <!-- Imagens principais do produto -->
                 <div class="shrink-0 max-w-md lg:max-w-lg mx-auto">
                   <!-- Imagens do produto -->
-                  @each(image in product_images)
+                  @each((image, index) in product_images)
+                  @if(index <= 6)
                     <div class="product-slide w-full sm:h-400px] md:h-[400px] lg:h-[500px] flex-shrink-0 flex items-center justify-center relative">
                         <img src="{{ image }}" alt="{{ product.name }} - Imagem" class=" h-full w-full">
                         <button class="absolute top-1/2 left-[-2rem] transform -translate-y-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded-full" onclick="moveSlide(-1)">
@@ -23,11 +24,14 @@
                         <button class="absolute top-1/2 right-[-2rem] transform -translate-y-1/2 bg-black bg-opacity-50 text-white px-4 py-2 rounded-full" onclick="moveSlide(1)">
                             &#10095;
                         </button>
-                    </div>                                                  
-                    @end
+                    </div>   
+                  @endif                                               
+                  @end
                     <div class="mt-20 flex justify-center gap-4">
                         @each((image, index) in product_images)
+                        @if(index <= 6) 
                         <img src="{{ image }}" alt="{{ product.name }} - Miniatura" class="w-20 h-20 object-cover cursor-pointer rounded" onclick="moveSlide(null, {{index}} )">
+                        @end
                         @endeach
                     </div>
 
@@ -168,8 +172,13 @@
 
               <hr class="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
             
-            <p class="mb-6 text-gray-500 dark:text-gray-400" id="description"><strong>Descrição:</strong>  {{ product.description }}</p>
-
+              <p class="mb-6 text-gray-500 dark:text-gray-400 overflow-hidden" id="description">
+                <strong>Descrição:</strong> 
+                <span id="description-text">{{ product.description }}</span>
+            </p>
+            <div class="w-full flex justify-center">
+              <button id="read-more-btn" class="hidden text-black-500 hover:text-white bg-transparent border-2 border-black hover:bg-black font-medium text-sm px-5 py-2.5 flex items-center justify-center">Ler mais</button>
+            </div>
         </div>  
       </main>
       <div class=" bg-black py-8 antialiased dark:bg-gray-900 md:py-16">
@@ -243,6 +252,43 @@
     @endif
 
     <script>
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const description = document.getElementById("description");
+        const text = document.getElementById("description-text");
+        const button = document.getElementById("read-more-btn");
+    
+        // Defina um limite de linhas (8 linhas como referência)
+        const maxLines = 10;
+    
+        // Função para calcular o número de linhas visíveis
+        function isTextOverflowing(element, maxLines) {
+            const lineHeight = parseFloat(getComputedStyle(element).lineHeight);
+            const maxHeight = lineHeight * maxLines;
+            return element.offsetHeight > maxHeight;
+        }
+    
+        // Verifica se o texto excede o limite
+        if (isTextOverflowing(description, maxLines)) {
+            description.style.maxHeight = `${maxLines * 1.2}em`; // Ajuste de altura baseado no tamanho da linha
+            description.style.overflow = "hidden";
+            button.classList.remove("hidden");
+        }
+    
+        // Alternar visibilidade completa do texto
+        button.addEventListener("click", function () {
+            if (description.style.overflow === "hidden") {
+                description.style.overflow = "visible";
+                description.style.maxHeight = "none";
+                button.textContent = "Ler menos";
+            } else {
+                description.style.overflow = "hidden";
+                description.style.maxHeight = `${maxLines * 1.2}em`;
+                button.textContent = "Ler mais";
+            }
+        });
+    });
+
         window.onload = function() {
             console.log("A página foi totalmente carregada!");
     
@@ -284,8 +330,3 @@
 </body>
 </html>
 @end
-<footer class="bg-white text-black py-6 max-h">
-  <div class="max-w-7xl mx-auto text-center">
-      <p>&copy; 2024 E-Shop. All rights reserved.</p>
-  </div>
-</footer>
